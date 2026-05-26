@@ -19,11 +19,26 @@
     /* ── Product layout ── */
     .pdp-wrap {
       display: grid;
-      grid-template-columns: 60fr 40fr;
+      grid-template-columns: 40fr 60fr;
       align-items: start;
     }
 
-    /* LEFT — 2-column tile grid (front + back side by side) */
+    /* LEFT — sticky info panel */
+    .pdp-info {
+      position: sticky;
+      top: 52px;
+      height: calc(100vh - 52px);
+      overflow-y: auto;
+      padding: 48px 52px 48px 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      scrollbar-width: none;
+      background: rgba(255,255,255,0.92);
+    }
+    .pdp-info::-webkit-scrollbar { display: none; }
+
+    /* RIGHT — 2-column tile grid (front + back side by side) */
     .pdp-gallery {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -45,21 +60,6 @@
       height: 72vh;
     }
 
-    /* RIGHT — sticky info panel */
-    .pdp-info {
-      position: sticky;
-      top: 52px;
-      height: calc(100vh - 52px);
-      overflow-y: auto;
-      padding: 48px 44px 48px 52px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      scrollbar-width: none;
-      background: rgba(255,255,255,0.92);
-    }
-    .pdp-info::-webkit-scrollbar { display: none; }
-
     /* Size error badge */
     .size-err {
       display: inline-block;
@@ -78,11 +78,11 @@
     /* ── Info panel — block format ── */
     .pdp-name {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 400;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #0000ff;
     }
     .pdp-material {
@@ -91,13 +91,13 @@
       letter-spacing: 0.07em;
       text-transform: uppercase;
       color: #999;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .pdp-price {
       font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.06em;
-      margin-bottom: 36px;
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      margin-bottom: 30px;
       color: #0000ff;
     }
     .pdp-size-label {
@@ -145,7 +145,7 @@
     .pdp-sg-link:hover { opacity: 1; }
     .pdp-add-btn {
       width: 100%;
-      background: var(--black);
+      background: #0000ff;
       color: white;
       font-family: var(--font-mono);
       font-size: 10px;
@@ -154,14 +154,15 @@
       padding: 15px 0;
       cursor: pointer;
       margin-bottom: 8px;
+      border: none;
       transition: opacity 0.15s;
     }
-    .pdp-add-btn:hover { opacity: 0.75; }
+    .pdp-add-btn:hover { opacity: 0.82; }
     .pdp-buy-btn {
       width: 100%;
       background: white;
-      color: var(--black);
-      border: 1px solid var(--black);
+      color: #0000ff;
+      border: 1px solid #0000ff;
       font-family: var(--font-mono);
       font-size: 10px;
       letter-spacing: 0.14em;
@@ -170,27 +171,28 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
-    .pdp-buy-btn:hover { background: var(--black); color: white; }
+    .pdp-buy-btn:hover { background: #0000ff; color: white; }
 
     /* Subscribe block */
     .pdp-subscribe {
-      margin-top: 48px;
-      background: var(--black);
-      color: var(--white);
-      padding: 20px 22px;
-      max-width: 340px;
+      margin-top: 44px;
+      background: #f0f0f5;
+      color: #0000ff;
+      border: 1px solid #d4d4e0;
+      padding: 18px 20px;
     }
     .pdp-subscribe .sub-label {
-      font-family: var(--font-sans);
+      font-family: var(--font-mono);
       font-size: 9px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 10px;
+      color: #0000ff;
     }
     .pdp-sub-row {
       display: flex;
-      border: 1px solid rgba(255,255,255,0.35);
+      border: 1px solid #c0c0d4;
     }
     .pdp-sub-row input {
       flex: 1;
@@ -199,26 +201,67 @@
       outline: none;
       padding: 8px 12px;
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--white);
+      font-size: 10px;
+      color: #0000ff;
       letter-spacing: 0.04em;
     }
-    .pdp-sub-row input::placeholder { color: rgba(255,255,255,0.4); }
+    .pdp-sub-row input::placeholder { color: rgba(0,0,200,0.35); }
     .pdp-sub-btn {
-      color: var(--white);
+      color: #0000ff;
       padding: 0 14px;
       font-size: 16px;
-      border-left: 1px solid rgba(255,255,255,0.35);
+      border-left: 1px solid #c0c0d4;
+      background: transparent;
       transition: background 0.15s;
     }
-    .pdp-sub-btn:hover { background: rgba(255,255,255,0.08); }
+    .pdp-sub-btn:hover { background: rgba(0,0,255,0.06); }
     .pdp-sub-fine {
       font-size: 9px;
-      color: rgba(255,255,255,0.45);
+      color: rgba(0,0,180,0.5);
       margin-top: 9px;
       line-height: 1.5;
     }
-    .pdp-sub-fine a { color: rgba(255,255,255,0.55); text-decoration: underline; }
+    .pdp-sub-fine a { color: rgba(0,0,200,0.6); text-decoration: underline; }
+
+    /* Inline apparel size chart */
+    .pdp-size-chart {
+      margin-top: 20px;
+      margin-bottom: 28px;
+    }
+    .pdp-size-chart-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .pdp-size-chart table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.03em;
+    }
+    .pdp-size-chart th {
+      text-align: left;
+      padding: 5px 6px 5px 0;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #e8e8e8;
+      white-space: nowrap;
+    }
+    .pdp-size-chart td {
+      padding: 5px 6px 5px 0;
+      border-bottom: 1px solid #f2f2f2;
+      color: #333;
+      white-space: nowrap;
+    }
+    .pdp-size-chart tr.chart-active td { color: #0000ff; }
 
     /* Size guide table below images */
     .size-guide-wrap {
@@ -262,13 +305,20 @@
 
     /* Mobile */
     @media (max-width: 860px) {
-      .pdp-wrap { grid-template-columns: 1fr; }
+      .pdp-wrap {
+        grid-template-columns: 1fr;
+      }
       .pdp-info {
         position: relative;
         top: auto;
         height: auto;
-        padding: 28px 20px 40px;
+        padding: 28px 20px 36px;
+        order: 2; /* info below gallery on mobile */
       }
+      .pdp-gallery {
+        order: 1;
+      }
+      .pdp-size-chart table { font-size: 8px; }
     }
   </style>
 </head>
@@ -319,12 +369,7 @@
 
     <div class="pdp-wrap">
 
-      <!-- LEFT: scrollable image gallery -->
-      <div class="pdp-gallery" id="pdpGallery">
-        <!-- Images injected by JS -->
-      </div>
-
-      <!-- RIGHT: sticky product info -->
+      <!-- LEFT: sticky product info -->
       <div class="pdp-info">
 
         <div class="size-err hidden" id="sizeError">SELECT A SIZE*</div>
@@ -344,6 +389,12 @@
         </div>
 
       </div>
+
+      <!-- RIGHT: scrollable image gallery -->
+      <div class="pdp-gallery" id="pdpGallery">
+        <!-- Images injected by JS -->
+      </div>
+
     </div>
 
     <!-- Size guide (rendered below image stack, toggled from info panel) -->
@@ -433,8 +484,40 @@
         gallery.appendChild(el);
       });
 
-      // Build info panel (OJAS block format)
+      // Build info panel
       const isOneSize = product.sizeType === 'one-size';
+
+      // Standard apparel size chart (guessed — update once confirmed)
+      const APPAREL_CHART = [
+        { size: 'XS',   chest: '33–34"  /  84–86 cm',  length: '26"  /  66 cm' },
+        { size: 'S',    chest: '35–36"  /  89–92 cm',  length: '27"  /  69 cm' },
+        { size: 'M',    chest: '37–39"  /  94–99 cm',  length: '28"  /  71 cm' },
+        { size: 'L',    chest: '40–42"  /  102–107 cm', length: '29"  /  74 cm' },
+        { size: 'XL',   chest: '43–45"  /  109–114 cm', length: '30"  /  76 cm' },
+        { size: 'XXL',  chest: '46–48"  /  117–122 cm', length: '31"  /  79 cm' },
+        { size: 'XXXL', chest: '49–51"  /  124–130 cm', length: '32"  /  81 cm' },
+      ];
+
+      // Determine if this product uses standard apparel sizes
+      const apparelSizes = ['XS','S','M','L','XL','XXL','XXXL'];
+      const isApparel = !isOneSize && product.sizes &&
+        product.sizes.some(s => apparelSizes.includes(s));
+
+      let sizeChart = '';
+      if (isApparel) {
+        const rows = APPAREL_CHART
+          .filter(r => product.sizes.includes(r.size))
+          .map(r => `<tr id="chart-${r.size}"><td>${r.size}</td><td>${r.chest}</td><td>${r.length}</td></tr>`)
+          .join('');
+        sizeChart = `
+          <div class="pdp-size-chart">
+            <p class="pdp-size-chart-title">Size Guide</p>
+            <table>
+              <thead><tr><th>Size</th><th>Chest</th><th>Body Length</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
 
       let sizeSection = '';
       if (isOneSize) {
@@ -443,13 +526,10 @@
         const sizeBtns = product.sizes.map(s =>
           `<button class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`
         ).join('');
-        const sgLink = product.sizeGuide
-          ? `<a class="pdp-sg-link" onclick="toggleSizeGuide()">Size Guide</a>`
-          : '';
         sizeSection = `
           <span class="pdp-size-label">Select Size</span>
           <div class="pdp-size-buttons">${sizeBtns}</div>
-          ${sgLink}
+          ${sizeChart}
         `;
       }
 
@@ -494,6 +574,10 @@
     function selectSize(btn) {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
+      // Highlight matching row in size chart
+      document.querySelectorAll('.pdp-size-chart tr').forEach(r => r.classList.remove('chart-active'));
+      const chartRow = document.getElementById('chart-' + btn.dataset.size);
+      if (chartRow) chartRow.classList.add('chart-active');
       clearErr();
     }
 
@@ -503,14 +587,7 @@
       return btn ? btn.dataset.size : '';
     }
 
-    function toggleSizeGuide() {
-      const el = document.getElementById('sizeGuideWrap');
-      const visible = el.style.display !== 'none' && el.style.display !== '';
-      el.style.display = visible ? 'none' : 'block';
-      if (!visible) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function handleAdd() {
+function handleAdd() {
       const size = getSize();
       if (!size) { document.getElementById('sizeError').classList.remove('hidden'); return; }
       addToCart({
