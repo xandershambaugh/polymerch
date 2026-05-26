@@ -31,11 +31,10 @@
     }
     .pdp-info::-webkit-scrollbar { display: none; }
 
-    /* RIGHT — 2-column tile grid (front + back side by side) */
+    /* RIGHT — single-column stacked gallery */
     .pdp-gallery {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
+      display: flex;
+      flex-direction: column;
     }
 
     .pdp-gallery img {
@@ -44,14 +43,11 @@
       aspect-ratio: 1 / 1;
       object-fit: contain;
       mix-blend-mode: multiply;
+      cursor: zoom-in;
+      transition: opacity 0.15s;
     }
 
-    /* If only 1 image, span both columns */
-    .pdp-gallery img:only-child {
-      grid-column: 1 / -1;
-      aspect-ratio: auto;
-      height: 72vh;
-    }
+    .pdp-gallery img:hover { opacity: 0.88; }
 
     /* Size error badge */
     .size-err {
@@ -71,11 +67,12 @@
     /* ── Info panel — block format ── */
     .pdp-name {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 22px;
       font-weight: 400;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+      line-height: 1.2;
       color: #0000ff;
     }
     .pdp-material {
@@ -258,8 +255,9 @@
 
     /* Inline apparel size chart */
     .pdp-size-chart {
-      margin-top: 20px;
-      margin-bottom: 28px;
+      width: 100%;
+      margin-top: 24px;
+      margin-bottom: 0;
     }
     .pdp-size-chart-title {
       font-family: var(--font-mono);
@@ -331,6 +329,83 @@
       padding: 6px 0;
       border-bottom: 1px solid #f2f2f2;
       color: #333;
+    }
+
+    /* ── Zoom lightbox ── */
+    .zoom-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      cursor: zoom-out;
+    }
+    .zoom-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .zoom-img {
+      max-width: 86vw;
+      max-height: 86vh;
+      object-fit: contain;
+      transform: scale(0.94);
+      transition: transform 0.22s ease;
+      cursor: default;
+      pointer-events: none;
+    }
+    .zoom-overlay.open .zoom-img {
+      transform: scale(1);
+    }
+    .zoom-close {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      color: rgba(255,255,255,0.7);
+      font-size: 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+      z-index: 1;
+      padding: 6px;
+    }
+    .zoom-close:hover { color: #fff; }
+    .zoom-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.55);
+      font-size: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      padding: 16px 20px;
+      transition: color 0.15s;
+      z-index: 1;
+    }
+    .zoom-nav:hover { color: #fff; }
+    .zoom-nav.zoom-prev { left: 0; }
+    .zoom-nav.zoom-next { right: 0; }
+    .zoom-nav[hidden] { display: none; }
+    .zoom-counter {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.4);
     }
 
     /* Related row */
@@ -456,6 +531,15 @@
     </div>
   </div>
 
+  <!-- ZOOM LIGHTBOX -->
+  <div class="zoom-overlay" id="zoomOverlay">
+    <button class="zoom-nav zoom-prev" id="zoomPrev" onclick="zoomNav(-1)">←</button>
+    <img class="zoom-img" id="zoomImg" src="" alt="">
+    <button class="zoom-nav zoom-next" id="zoomNext" onclick="zoomNav(1)">→</button>
+    <button class="zoom-close" id="zoomClose">✕</button>
+    <span class="zoom-counter" id="zoomCounter"></span>
+  </div>
+
   <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-inner">
@@ -513,6 +597,7 @@
         el.src = src;
         el.alt = `${product.name} — view ${i + 1}`;
         el.loading = i === 0 ? 'eager' : 'lazy';
+        el.addEventListener('click', () => openZoom(i));
         gallery.appendChild(el);
       });
 
@@ -563,7 +648,7 @@
         `;
       }
 
-      // Size section
+      // Size section (chart moved below CTAs)
       let sizeSection = '';
       if (isOneSize) {
         sizeSection = `<span class="pdp-size-label">One Size</span>`;
@@ -574,7 +659,6 @@
         sizeSection = `
           <span class="pdp-size-label">Select Size</span>
           <div class="pdp-size-buttons">${sizeBtns}</div>
-          ${sizeChart}
         `;
       }
 
@@ -586,6 +670,7 @@
         ${sizeSection}
         <button class="pdp-add-btn" onclick="handleAdd()">Add to Bag</button>
         <button class="pdp-buy-btn" onclick="handleBuy()">Buy Now</button>
+        ${sizeChart}
       `;
 
       // Size guide table
@@ -707,6 +792,48 @@
     }
 
     function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }
+
+    // ── Zoom lightbox ─────────────────────────────────────
+    let _zoomSrcs = [];
+    let _zoomIdx  = 0;
+
+    function openZoom(index) {
+      _zoomSrcs = Array.from(document.querySelectorAll('#pdpGallery img')).map(img => img.src);
+      _zoomIdx  = index;
+      _renderZoom();
+      document.getElementById('zoomOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeZoom() {
+      document.getElementById('zoomOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function zoomNav(dir) {
+      _zoomIdx = (_zoomIdx + dir + _zoomSrcs.length) % _zoomSrcs.length;
+      _renderZoom();
+    }
+
+    function _renderZoom() {
+      document.getElementById('zoomImg').src     = _zoomSrcs[_zoomIdx];
+      const multi = _zoomSrcs.length > 1;
+      document.getElementById('zoomPrev').hidden = !multi;
+      document.getElementById('zoomNext').hidden = !multi;
+      document.getElementById('zoomCounter').textContent =
+        multi ? `${_zoomIdx + 1} / ${_zoomSrcs.length}` : '';
+    }
+
+    document.getElementById('zoomOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeZoom();
+    });
+    document.getElementById('zoomClose').addEventListener('click', closeZoom);
+    document.addEventListener('keydown', function(e) {
+      if (!document.getElementById('zoomOverlay').classList.contains('open')) return;
+      if (e.key === 'Escape')      closeZoom();
+      if (e.key === 'ArrowLeft')   zoomNav(-1);
+      if (e.key === 'ArrowRight')  zoomNav(1);
+    });
   </script>
   <script src="js/ticker.js"></script>
 </body>
