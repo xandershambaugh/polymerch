@@ -794,6 +794,16 @@ img { display: block; max-width: 100%; }
   color: var(--mid-gray);
 }
 
+/* COLOR + SIZE lines in cart (shared style) */
+.cart-item-meta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  line-height: 1.6;
+}
+
 .cart-item-price {
   font-family: var(--font-mono);
   font-size: 11px;

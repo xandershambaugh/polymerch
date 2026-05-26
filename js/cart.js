@@ -19,9 +19,11 @@ function saveCart(cart) {
 }
 
 function addToCart(item) {
-  // item = { id, name, price, size, image }
+  // item = { id, name, price, size, color?, image }
   const cart = getCart();
-  const existing = cart.find(c => c.id === item.id && c.size === item.size);
+  const existing = cart.find(c =>
+    c.id === item.id && c.size === item.size && (c.color || '') === (item.color || '')
+  );
   if (existing) {
     existing.qty = (existing.qty || 1) + 1;
   } else {
@@ -31,8 +33,10 @@ function addToCart(item) {
   openCart();
 }
 
-function removeFromCart(id, size) {
-  const cart = getCart().filter(c => !(c.id === id && c.size === size));
+function removeFromCart(id, size, color) {
+  const cart = getCart().filter(c =>
+    !(c.id === id && c.size === size && (c.color || '') === (color || ''))
+  );
   saveCart(cart);
 }
 
@@ -81,13 +85,14 @@ function renderCart() {
         : `<div class="cart-item-img" style="background:#f2f2f2;"></div>`}
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-size">SIZE: ${item.size}${item.qty > 1 ? ` &times; ${item.qty}` : ''}</div>
+        ${item.color ? `<div class="cart-item-meta">COLOR: ${item.color}</div>` : ''}
+        <div class="cart-item-meta">SIZE: ${item.size}${item.qty > 1 ? ` &times; ${item.qty}` : ''}</div>
         <div class="cart-item-price">$${lineTotal.toFixed(0)}</div>
       </div>
       <button class="cart-remove-btn" aria-label="Remove">✕</button>
     `;
     div.querySelector('.cart-remove-btn').addEventListener('click', () => {
-      removeFromCart(item.id, item.size);
+      removeFromCart(item.id, item.size, item.color);
     });
     itemsEl.appendChild(div);
   });
@@ -127,7 +132,10 @@ function proceedToCheckout() {
   // Uncomment once Shopify is connected:
   // window.location.href = `https://${shopifyStore}/cart/${lineItems}`;
 
-  alert(`Checkout coming soon!\n\nYour cart:\n${cart.map(i => `• ${i.name} (${i.size}) ×${i.qty}`).join('\n')}`);
+  alert(`Checkout coming soon!\n\nYour cart:\n${cart.map(i => {
+    const color = i.color ? ` / ${i.color}` : '';
+    return `• ${i.name}${color} (${i.size}) ×${i.qty}`;
+  }).join('\n')}`);
 }
 
 // Wire up cart toggle buttons

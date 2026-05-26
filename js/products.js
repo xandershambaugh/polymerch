@@ -41,11 +41,14 @@ const PRODUCTS = [
     price: 149,
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
     sizeType: 'apparel',
-    colors: ['NAVY', 'GRAY', 'CHARCOAL'],
+    // colorVariants: each entry has name + the image for that colorway
+    colorVariants: [
+      { name: 'GRAY',     image: 'assets/images/Group 40921.jpg' },
+      { name: 'NAVY',     image: 'assets/images/Group 40949.jpg' },
+      { name: 'CHARCOAL', image: 'assets/images/Group 40951.jpg' },
+    ],
     images: [
-      'assets/images/Group 40921.jpg',
-      'assets/images/Group 40949.jpg',
-      'assets/images/Group 40951.jpg',
+      'assets/images/Group 40921.jpg', // default shown before color selected
     ],
     shopifyVariants: {},
   },
@@ -121,7 +124,12 @@ const PRODUCTS = [
     price: 49,
     sizes: ['ONE SIZE'],
     sizeType: 'one-size',
-    colors: ['NAVY / GOLD', 'BLACK / GOLD', 'NAVY / WHITE', 'BLACK / WHITE'],
+    colorVariants: [
+      { name: 'NAVY / GOLD' },
+      { name: 'BLACK / GOLD' },
+      { name: 'NAVY / WHITE' },
+      { name: 'BLACK / WHITE' },
+    ],
     images: [
       'assets/images/Group 40933.jpg',
     ],
@@ -256,6 +264,10 @@ const PRODUCTS = [
     price: 29,
     sizes: ['ONE SIZE'],
     sizeType: 'one-size',
+    colorVariants: [
+      { name: 'CREAM' },
+      { name: 'NAVY' },
+    ],
     images: [
       'assets/images/Group 40948.jpg',
     ],

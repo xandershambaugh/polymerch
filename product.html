@@ -223,6 +223,46 @@
     }
     .pdp-sub-fine a { color: rgba(0,0,200,0.6); text-decoration: underline; }
 
+    /* ── Color picker ── */
+    .pdp-color-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+    }
+    .pdp-color-selected-name {
+      color: #0000ff;
+      font-weight: 700;
+    }
+    .pdp-color-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    /* Color buttons share .size-btn styles; selected state uses blue outline */
+    .color-btn.selected {
+      background: white;
+      color: #0000ff;
+      border-color: #0000ff;
+    }
+    .color-err {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    .color-err.hidden { display: none; }
+
     /* Inline apparel size chart */
     .pdp-size-chart {
       margin-top: 20px;
@@ -372,6 +412,7 @@
       <!-- LEFT: sticky product info -->
       <div class="pdp-info">
 
+        <div class="color-err hidden" id="colorError">SELECT A COLOR*</div>
         <div class="size-err hidden" id="sizeError">SELECT A SIZE*</div>
 
         <div id="pdpInfo">
@@ -519,6 +560,19 @@
           </div>`;
       }
 
+      // Color section
+      let colorSection = '';
+      if (product.colorVariants && product.colorVariants.length) {
+        const colorBtns = product.colorVariants.map((cv, i) =>
+          `<button class="size-btn color-btn" data-color="${cv.name}" data-color-img="${cv.image || ''}" onclick="selectColor(this)">${cv.name}</button>`
+        ).join('');
+        colorSection = `
+          <span class="pdp-color-label">Select Color — <span class="pdp-color-selected-name" id="colorSelectedName"></span></span>
+          <div class="pdp-color-buttons">${colorBtns}</div>
+        `;
+      }
+
+      // Size section
       let sizeSection = '';
       if (isOneSize) {
         sizeSection = `<span class="pdp-size-label">One Size</span>`;
@@ -537,6 +591,7 @@
         <h1 class="pdp-name">${product.name}</h1>
         <p class="pdp-material">${product.material}</p>
         <p class="pdp-price">$${product.price}</p>
+        ${colorSection}
         ${sizeSection}
         <button class="pdp-add-btn" onclick="handleAdd()">Add to Bag</button>
         <button class="pdp-buy-btn" onclick="handleBuy()">Buy Now</button>
@@ -568,40 +623,92 @@
       }).join('');
     }
 
-    // Actions
-    function clearErr() { document.getElementById('sizeError').classList.add('hidden'); }
+    // ── Helpers ──────────────────────────────────────────
+    function clearColorErr() { document.getElementById('colorError').classList.add('hidden'); }
+    function clearSizeErr()  { document.getElementById('sizeError').classList.add('hidden'); }
+
+    function selectColor(btn) {
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      clearColorErr();
+      // Update inline label
+      const nameEl = document.getElementById('colorSelectedName');
+      if (nameEl) nameEl.textContent = btn.dataset.color;
+      // Swap gallery hero image when this colorway has its own image
+      const img = btn.dataset.colorImg;
+      if (img) {
+        const firstImg = document.querySelector('#pdpGallery img');
+        if (firstImg) firstImg.src = img;
+      }
+    }
 
     function selectSize(btn) {
-      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelectorAll('.size-btn:not(.color-btn)').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       // Highlight matching row in size chart
       document.querySelectorAll('.pdp-size-chart tr').forEach(r => r.classList.remove('chart-active'));
       const chartRow = document.getElementById('chart-' + btn.dataset.size);
       if (chartRow) chartRow.classList.add('chart-active');
-      clearErr();
+      clearSizeErr();
+    }
+
+    function getColor() {
+      if (!product.colorVariants || !product.colorVariants.length) return null; // not required
+      const btn = document.querySelector('.color-btn.selected');
+      return btn ? btn.dataset.color : ''; // '' = required but not chosen
     }
 
     function getSize() {
       if (product.sizeType === 'one-size') return 'ONE SIZE';
-      const btn = document.querySelector('.size-btn.selected');
+      const btn = document.querySelector('.size-btn:not(.color-btn).selected');
       return btn ? btn.dataset.size : '';
     }
 
-function handleAdd() {
-      const size = getSize();
-      if (!size) { document.getElementById('sizeError').classList.remove('hidden'); return; }
+    function getCurrentImage() {
+      const firstImg = document.querySelector('#pdpGallery img');
+      if (firstImg) {
+        // Strip origin prefix so we store a relative path
+        return firstImg.src.startsWith('http')
+          ? firstImg.getAttribute('src')
+          : firstImg.src;
+      }
+      return product.images && product.images[0] ? product.images[0] : null;
+    }
+
+    function validate() {
+      const color = getColor();
+      const size  = getSize();
+      let ok = true;
+      if (color === '') { // null = no color picker; '' = required but blank
+        document.getElementById('colorError').classList.remove('hidden');
+        ok = false;
+      }
+      if (!size) {
+        document.getElementById('sizeError').classList.remove('hidden');
+        ok = false;
+      }
+      return ok;
+    }
+
+    function handleAdd() {
+      if (!validate()) return;
+      const color = getColor();
+      const size  = getSize();
       addToCart({
-        id: product.id, name: product.name, price: product.price, size,
+        id: product.id, name: product.name, price: product.price,
+        size, color: color || undefined,
         image: product.images && product.images[0] ? product.images[0] : null,
         shopifyVariantId: product.shopifyVariants[size] || null,
       });
     }
 
     function handleBuy() {
-      const size = getSize();
-      if (!size) { document.getElementById('sizeError').classList.remove('hidden'); return; }
+      if (!validate()) return;
+      const color = getColor();
+      const size  = getSize();
       addToCart({
-        id: product.id, name: product.name, price: product.price, size,
+        id: product.id, name: product.name, price: product.price,
+        size, color: color || undefined,
         image: product.images && product.images[0] ? product.images[0] : null,
         shopifyVariantId: product.shopifyVariants[size] || null,
       });
