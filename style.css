@@ -858,4 +858,18 @@ img { display: block; max-width: 100%; }
   .product-grid { grid-template-columns: repeat(2, 1fr); }
   .related-grid { grid-template-columns: repeat(2, 1fr); }
   .cart-drawer { width: 100%; }
+
+  /* Footer — same height as header, single line */
+  .site-footer { padding: 0 14px; }
+  .footer-inner {
+    height: 52px;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .footer-logo { font-size: 9px; gap: 4px; flex-shrink: 0; }
+  .footer-logo svg { display: none; }
+  .footer-links { flex-wrap: nowrap; gap: 9px; }
+  .footer-links a { font-size: 7px; letter-spacing: 0.05em; }
+  .footer-copy { font-size: 7px; white-space: nowrap; flex-shrink: 0; }
 }
