@@ -16,18 +16,26 @@
       align-items: start;          /* columns are independent height */
     }
 
-    /* LEFT — scrollable image stack */
+    /* LEFT — 2-column tile grid (front + back side by side) */
     .pdp-gallery {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;                    /* hairline gap between images */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
     }
 
     .pdp-gallery img {
       display: block;
       width: 100%;
-      height: auto;
-      background: #f4f4f4;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    /* If only 1 image, span both columns */
+    .pdp-gallery img:only-child {
+      grid-column: 1 / -1;
+      aspect-ratio: auto;
+      height: 72vh;
     }
 
     /* RIGHT — sticky info panel */
@@ -59,55 +67,100 @@
     }
     .size-err.hidden { display: none; }
 
-    /* Main product text block — inline slash format */
-    .pdp-title {
+    /* ── Info panel — block format ── */
+    .pdp-name {
       font-family: var(--font-mono);
-      font-size: clamp(15px, 1.9vw, 24px);
-      line-height: 1.6;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+      font-size: 13px;
       font-weight: 400;
-      color: var(--black);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
-
-    .pdp-title .slash { margin: 0 5px; }
-
-    .pdp-title .u {
+    .pdp-material {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 20px;
+    }
+    .pdp-price {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      margin-bottom: 36px;
+    }
+    .pdp-size-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+    }
+    .pdp-size-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .size-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid #d8d8d8;
+      padding: 8px 13px;
+      cursor: pointer;
+      background: white;
+      color: var(--black);
+      transition: border-color 0.12s, background 0.12s, color 0.12s;
+    }
+    .size-btn:hover { border-color: var(--black); }
+    .size-btn.selected { background: var(--black); color: white; border-color: var(--black); }
+    .pdp-sg-link {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       text-decoration: underline;
       text-underline-offset: 3px;
       cursor: pointer;
-    }
-    .pdp-title .u:hover { opacity: 0.55; }
-
-    /* Inline size select */
-    .size-wrap {
-      display: inline-block;
-      position: relative;
-    }
-    .size-wrap select {
-      appearance: none;
-      -webkit-appearance: none;
-      background: transparent;
-      border: none;
-      border-bottom: 1.5px solid var(--black);
-      font-family: var(--font-mono);
-      font-size: inherit;
-      letter-spacing: inherit;
-      text-transform: uppercase;
-      cursor: pointer;
-      padding-right: 16px;
-      outline: none;
+      margin-bottom: 36px;
       color: var(--black);
+      opacity: 0.5;
     }
-    .size-wrap::after {
-      content: '▾';
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      font-size: 11px;
+    .pdp-sg-link:hover { opacity: 1; }
+    .pdp-add-btn {
+      width: 100%;
+      background: var(--black);
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 15px 0;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: opacity 0.15s;
     }
+    .pdp-add-btn:hover { opacity: 0.75; }
+    .pdp-buy-btn {
+      width: 100%;
+      background: white;
+      color: var(--black);
+      border: 1px solid var(--black);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 15px 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .pdp-buy-btn:hover { background: var(--black); color: white; }
 
     /* Subscribe block */
     .pdp-subscribe {
@@ -266,9 +319,9 @@
 
         <div class="size-err hidden" id="sizeError">SELECT A SIZE*</div>
 
-        <p class="pdp-title" id="pdpTitle">
+        <div id="pdpInfo">
           <!-- Populated by JS -->
-        </p>
+        </div>
 
         <!-- Subscribe -->
         <div class="pdp-subscribe">
@@ -370,30 +423,33 @@
         gallery.appendChild(el);
       });
 
-      // Build size select
+      // Build info panel (OJAS block format)
       const isOneSize = product.sizeType === 'one-size';
-      let sizeHTML = '';
+
+      let sizeSection = '';
       if (isOneSize) {
-        sizeHTML = `<select id="sizeSelect" style="display:none"><option value="ONE SIZE">ONE SIZE</option></select>ONE SIZE`;
+        sizeSection = `<span class="pdp-size-label">One Size</span>`;
       } else {
-        const opts = product.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
-        sizeHTML = `<span class="size-wrap"><select id="sizeSelect" onchange="clearErr()"><option value="">—</option>${opts}</select></span>`;
+        const sizeBtns = product.sizes.map(s =>
+          `<button class="size-btn" data-size="${s}" onclick="selectSize(this)">${s}</button>`
+        ).join('');
+        const sgLink = product.sizeGuide
+          ? `<a class="pdp-sg-link" onclick="toggleSizeGuide()">Size Guide</a>`
+          : '';
+        sizeSection = `
+          <span class="pdp-size-label">Select Size</span>
+          <div class="pdp-size-buttons">${sizeBtns}</div>
+          ${sgLink}
+        `;
       }
 
-      // Size guide link
-      const sgLink = product.sizeGuide
-        ? `<span class="slash">/</span><a class="u" onclick="toggleSizeGuide()">SIZE GUIDE</a>`
-        : '';
-
-      // Inject title block (OJAS-style inline slash format)
-      document.getElementById('pdpTitle').innerHTML = `
-        ${product.name}
-        <span class="slash">/</span>${product.material}
-        <span class="slash">/</span>${isOneSize ? 'ONE SIZE' : `SIZE ${sizeHTML}`}
-        ${sgLink}
-        <span class="slash">/</span>$${product.price}
-        <span class="slash">/</span><span class="u" onclick="handleAdd()">ADD TO BAG</span>
-        <span class="slash">/</span><span style="cursor:pointer;" onclick="handleBuy()">BUY NOW</span>
+      document.getElementById('pdpInfo').innerHTML = `
+        <h1 class="pdp-name">${product.name}</h1>
+        <p class="pdp-material">${product.material}</p>
+        <p class="pdp-price">$${product.price}</p>
+        ${sizeSection}
+        <button class="pdp-add-btn" onclick="handleAdd()">Add to Bag</button>
+        <button class="pdp-buy-btn" onclick="handleBuy()">Buy Now</button>
       `;
 
       // Size guide table
@@ -425,9 +481,16 @@
     // Actions
     function clearErr() { document.getElementById('sizeError').classList.add('hidden'); }
 
+    function selectSize(btn) {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      clearErr();
+    }
+
     function getSize() {
-      const s = document.getElementById('sizeSelect');
-      return s ? s.value : 'ONE SIZE';
+      if (product.sizeType === 'one-size') return 'ONE SIZE';
+      const btn = document.querySelector('.size-btn.selected');
+      return btn ? btn.dataset.size : '';
     }
 
     function toggleSizeGuide() {
