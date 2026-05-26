@@ -234,6 +234,7 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
+  background: #fff;
 }
 
 .shop-heading a {
