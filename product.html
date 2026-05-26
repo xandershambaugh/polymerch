@@ -173,12 +173,12 @@
     }
     .pdp-buy-btn:hover { background: #0000ff; color: white; }
 
-    /* Subscribe block */
+    /* Request block */
     .pdp-subscribe {
       margin-top: 44px;
-      background: #f0f0f5;
+      background: #f4f4f4;
       color: #0000ff;
-      border: 1px solid #d4d4e0;
+      border: 1px solid #e0e0e0;
       padding: 18px 20px;
     }
     .pdp-subscribe .sub-label {
@@ -419,14 +419,14 @@
           <!-- Populated by JS -->
         </div>
 
-        <!-- Subscribe -->
+        <!-- Request more items -->
         <div class="pdp-subscribe">
-          <p class="sub-label">Subscribe</p>
+          <p class="sub-label">Request more items</p>
           <form class="pdp-sub-row" onsubmit="handleSub(event)">
             <input type="email" placeholder="Email*" required />
             <button type="submit" class="pdp-sub-btn">→</button>
           </form>
-          <p class="pdp-sub-fine">Stay connected with Polymarket merch updates. See the <a href="#">Privacy Policy</a>.</p>
+          <p class="pdp-sub-fine">Don't see your size or color? Leave your email and we'll be in touch.</p>
         </div>
 
       </div>
@@ -715,7 +715,7 @@
       proceedToCheckout();
     }
 
-    function handleSub(e) { e.preventDefault(); alert('Thanks for subscribing!'); e.target.reset(); }
+    function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }
   </script>
 </body>
 </html>
