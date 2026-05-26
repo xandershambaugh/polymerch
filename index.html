@@ -143,36 +143,162 @@
   </main>
 
   <script>
-    // ── TV Static ────────────────────────────────────────────────────────
+    // ── TV Static + Glitches ─────────────────────────────────────────────
     const canvas = document.getElementById('staticCanvas');
     const ctx    = canvas.getContext('2d');
 
+    // Render at half resolution for chunky retro pixel blocks + 4× perf gain
+    const SCALE = 2;
+    let W, H;
+
     function resizeCanvas() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+      W = canvas.width  = Math.ceil(window.innerWidth  / SCALE);
+      H = canvas.height = Math.ceil(window.innerHeight / SCALE);
+      canvas.style.width  = '100%';
+      canvas.style.height = '100%';
+      canvas.style.imageRendering = 'pixelated';
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Draw one frame of pixel noise, then schedule the next
-    function drawStatic() {
-      const w    = canvas.width;
-      const h    = canvas.height;
-      const img  = ctx.createImageData(w, h);
+    // ── Active glitch list ───────────────────────────────────────────────
+    const glitches = [];
+
+    function spawnGlitch() {
+      const roll = Math.random();
+
+      if (roll < 0.30) {
+        // Bright horizontal scan band (signal spike)
+        glitches.push({
+          kind: 'band',
+          y:    (Math.random() * 0.85 * H) | 0,
+          h:    (1 + Math.random() * 8)    | 0,
+          v:    170 + (Math.random() * 85) | 0,   // brightness
+          life: 1, decay: 0.10 + Math.random() * 0.18
+        });
+      } else if (roll < 0.55) {
+        // Dark dropout strip (signal loss)
+        glitches.push({
+          kind: 'dropout',
+          y:    (Math.random() * 0.85 * H) | 0,
+          h:    (3 + Math.random() * 22)   | 0,
+          life: 1, decay: 0.09 + Math.random() * 0.14
+        });
+      } else if (roll < 0.75) {
+        // Horizontal tear — lines shift sideways (VHS tracking error)
+        const count = 1 + (Math.random() * 3 | 0);
+        glitches.push({
+          kind:  'tear',
+          lines: Array.from({ length: count }, () => ({
+            y:     (Math.random() * H)            | 0,
+            h:     (1 + Math.random() * 6)        | 0,
+            shift: (Math.random() > 0.5 ? 1 : -1) * ((10 + Math.random() * 35) | 0)
+          })),
+          life: 1, decay: 0.20 + Math.random() * 0.30
+        });
+      } else if (roll < 0.90) {
+        // Full-frame brightness flicker
+        glitches.push({
+          kind: 'flicker',
+          boost: 20 + (Math.random() * 30) | 0,
+          life: 1, decay: 0.25 + Math.random() * 0.40
+        });
+      } else {
+        // Ghost echo — faint duplicate of the frame shifted up/down
+        glitches.push({
+          kind:    'ghost',
+          yShift:  ((Math.random() > 0.5 ? 1 : -1) * (4 + Math.random() * 14)) | 0,
+          opacity: 0.08 + Math.random() * 0.14,
+          life: 1, decay: 0.06 + Math.random() * 0.10
+        });
+      }
+    }
+
+    // Schedule glitches at random intervals (2–7 s apart)
+    function scheduleGlitch() {
+      setTimeout(() => { spawnGlitch(); scheduleGlitch(); },
+        2000 + Math.random() * 5000);
+    }
+    // Kick off with a short initial delay so the page has time to load
+    setTimeout(scheduleGlitch, 800);
+
+    // ── Draw loop (capped at ~24 fps for authentic old-TV feel) ──────────
+    let lastTs  = 0;
+    const FRAME = 1000 / 24;
+
+    // Offscreen canvas for ghost effect
+    const ghost = document.createElement('canvas');
+    const gCtx  = ghost.getContext('2d');
+
+    function draw(ts) {
+      requestAnimationFrame(draw);
+      if (ts - lastTs < FRAME) return;
+      lastTs = ts;
+
+      // Collect active effects
+      const flickerG = glitches.find(g => g.kind === 'flicker');
+      const boost    = flickerG ? flickerG.boost * flickerG.life : 0;
+
+      // ── Base noise (mostly dark, sparse bright sparks) ────────────────
+      const img  = ctx.createImageData(W, H);
       const data = img.data;
 
-      // Fill every pixel with a random grey value
       for (let i = 0; i < data.length; i += 4) {
-        const v    = (Math.random() * 255) | 0;
-        data[i]   = v;   // R
-        data[i+1] = v;   // G
-        data[i+2] = v;   // B
-        data[i+3] = 255; // A
+        const r = Math.random();
+        let v;
+        if      (r < 0.62) v = Math.random() * 28;          // dark dominant
+        else if (r < 0.88) v = 28 + Math.random() * 55;     // mid grain
+        else               v = 83 + Math.random() * 120;    // occasional bright spark
+        v = Math.min(255, v + boost) | 0;
+        data[i] = data[i+1] = data[i+2] = v;
+        data[i+3] = 255;
       }
       ctx.putImageData(img, 0, 0);
-      requestAnimationFrame(drawStatic);
+
+      // ── Tear lines (shift horizontal strips sideways) ─────────────────
+      glitches.filter(g => g.kind === 'tear').forEach(g => {
+        g.lines.forEach(ln => {
+          // Read the strip from the noise we just drew
+          const strip = ctx.getImageData(0, ln.y, W, ln.h);
+          ctx.putImageData(strip, ln.shift, ln.y);
+          // Fill the vacated edge with near-black
+          ctx.fillStyle = 'rgba(0,0,0,0.9)';
+          if (ln.shift > 0) ctx.fillRect(0, ln.y, ln.shift, ln.h);
+          else              ctx.fillRect(W + ln.shift, ln.y, -ln.shift, ln.h);
+        });
+      });
+
+      // ── Bright scan bands ─────────────────────────────────────────────
+      glitches.filter(g => g.kind === 'band').forEach(g => {
+        const v = g.v;
+        ctx.fillStyle = `rgba(${v},${v},${v},${0.82 * g.life})`;
+        ctx.fillRect(0, g.y, W, g.h);
+      });
+
+      // ── Dark dropout bands ────────────────────────────────────────────
+      glitches.filter(g => g.kind === 'dropout').forEach(g => {
+        ctx.fillStyle = `rgba(0,0,0,${0.88 * g.life})`;
+        ctx.fillRect(0, g.y, W, g.h);
+      });
+
+      // ── Ghost echo ────────────────────────────────────────────────────
+      glitches.filter(g => g.kind === 'ghost').forEach(g => {
+        ghost.width  = W;
+        ghost.height = H;
+        gCtx.putImageData(img, 0, 0);
+        ctx.save();
+        ctx.globalAlpha = g.opacity * g.life;
+        ctx.drawImage(ghost, 0, g.yShift);
+        ctx.restore();
+      });
+
+      // ── Decay & remove expired glitches ──────────────────────────────
+      for (let i = glitches.length - 1; i >= 0; i--) {
+        glitches[i].life -= glitches[i].decay;
+        if (glitches[i].life <= 0) glitches.splice(i, 1);
+      }
     }
-    drawStatic();
+    requestAnimationFrame(draw);
 
     // ── Password gate ────────────────────────────────────────────────────
     const CORRECT_PASSWORD = 'chaostheory';
