@@ -48,14 +48,6 @@
       overflow: hidden;
     }
 
-    /* Trajan image — full width, no crop */
-    .pw-trajan {
-      display: block;
-      width: calc(100% + 96px);
-      margin: -44px -48px 28px;
-      height: auto;
-    }
-
     .password-form-wrap h1 {
       font-family: 'Space Mono', monospace;
       font-size: 11px;
@@ -122,8 +114,17 @@
       left: 0;
       right: 0;
       z-index: 10;
-      border-top: 1px solid #1a1a1a;
+      background: #0000ff;
+      border-top: none;
       border-bottom: none;
+    }
+
+    .site-ticker .ticker-track a {
+      color: #fff;
+    }
+
+    .site-ticker .ticker-sep {
+      color: rgba(255, 255, 255, 0.45);
     }
   </style>
 </head>
@@ -135,7 +136,6 @@
   <!-- PASSWORD GATE -->
   <main class="password-gate">
     <div class="password-form-wrap">
-      <img class="pw-trajan" src="assets/images/trajan.jpg" alt="">
       <h1>Enter Password</h1>
       <form id="passwordForm">
         <div class="password-input-row">
