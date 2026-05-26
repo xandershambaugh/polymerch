@@ -58,8 +58,8 @@ img { display: block; max-width: 100%; }
 }
 
 .nav-logo svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 24px;
   flex-shrink: 0;
 }
 
