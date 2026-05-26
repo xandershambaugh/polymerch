@@ -274,9 +274,7 @@ img { display: block; max-width: 100%; }
 .shop-main {
   flex: 1;
   padding: 0;
-  background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
-  background-size: 22px 22px;
-  background-color: #fff;
+  background: #fff;
 }
 
 .shop-heading {
