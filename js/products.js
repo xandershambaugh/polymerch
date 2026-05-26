@@ -273,6 +273,45 @@ const PRODUCTS = [
     ],
     shopifyVariants: {},
   },
+  {
+    id: 'pm-soccer-jersey-ls',
+    name: 'PM SOCCER JERSEY — LONG SLEEVE',
+    material: 'POLY TRICOT / COLLAR / EMBROIDERY / PRINT / PATCH / RIB',
+    sizing: 'UNISEX',
+    price: 189,
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    sizeType: 'apparel',
+    images: [
+      'assets/images/Group 40993.jpg',
+    ],
+    shopifyVariants: {},
+  },
+  {
+    id: 'pm-soccer-jersey-ss',
+    name: 'PM SOCCER JERSEY — SHORT SLEEVE',
+    material: 'POLY TRICOT / COLLAR / EMBROIDERY / PRINT / PATCH / RIB',
+    sizing: 'UNISEX',
+    price: 169,
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    sizeType: 'apparel',
+    images: [
+      'assets/images/Group 40994.png',
+    ],
+    shopifyVariants: {},
+  },
+  {
+    id: 'pm-siberia-thermal',
+    name: 'PM SIBERIA THERMAL',
+    material: 'COTTON MODAL BLEND / BABY BLUE',
+    sizing: 'UNISEX',
+    price: 109,
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    sizeType: 'apparel',
+    images: [
+      'assets/images/image-1779834199871.webp',
+    ],
+    shopifyVariants: {},
+  },
 ];
 
 function getProductById(id) {

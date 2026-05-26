@@ -6,29 +6,23 @@
   <title>Polymarket — Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       height: 100%;
-      overflow: hidden; /* no scroll on password page */
+      overflow: hidden;
     }
 
-    /* Animated static canvas — fills entire viewport behind everything */
+    /* TV static canvas fills entire viewport */
     #staticCanvas {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       z-index: 0;
-    }
-
-    /* Ticker sits above canvas */
-    .site-ticker {
-      position: relative;
-      z-index: 10;
     }
 
     /* Password form centered over static */
@@ -39,32 +33,66 @@
       align-items: center;
       justify-content: center;
       z-index: 5;
-      pointer-events: none; /* let canvas show through around the form */
+      pointer-events: none;
     }
 
+    /* ── Trajan stone backdrop ─────────────────────────────────────── */
     .password-form-wrap {
       pointer-events: all;
       text-align: center;
+      width: 480px;
       padding: 44px 48px 40px;
-      background: rgba(0, 0, 0, 0.52);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background-image:
+        linear-gradient(rgba(8, 6, 3, 0.50), rgba(8, 6, 3, 0.56)),
+        url('assets/images/trajan.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      border: 1px solid rgba(180, 148, 72, 0.30);
+      overflow: hidden;
     }
 
-    .password-form-wrap h1 {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
+    /* ── POLYMARKET title — carved stone effect ────────────────────── */
+    .pw-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.30em;
+      text-indent: 0.30em; /* offset letter-spacing overhang */
+      color: rgba(238, 218, 168, 0.96);
+      text-shadow:
+        -1px -1px 0   rgba(255, 255, 255, 0.07),
+         1px  1px 3px rgba(0, 0, 0, 0.90),
+         0    2px 8px rgba(0, 0, 0, 0.60);
+      margin-bottom: 6px;
+    }
+
+    /* ── MMXXVI subtitle ───────────────────────────────────────────── */
+    .pw-year {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
       font-weight: 400;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.60em;
+      text-indent: 0.60em;
+      color: rgba(196, 166, 96, 0.72);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+      margin-bottom: 32px;
+    }
+
+    /* ── "Enter Password" label ────────────────────────────────────── */
+    .password-form-wrap h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.38em;
+      text-indent: 0.38em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.75);
-      margin-bottom: 22px;
+      color: rgba(196, 166, 96, 0.62);
+      margin-bottom: 16px;
     }
 
     .password-input-row {
       display: flex;
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(196, 166, 96, 0.38);
       background: transparent;
     }
 
@@ -74,23 +102,23 @@
       border: none;
       outline: none;
       padding: 11px 16px;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: rgba(238, 218, 168, 0.90);
       min-width: 220px;
     }
 
     .password-input-row input::placeholder {
-      color: rgba(255, 255, 255, 0.3);
-      letter-spacing: 0.22em;
+      color: rgba(196, 166, 96, 0.38);
+      letter-spacing: 0.30em;
     }
 
     .password-submit-btn {
       background: transparent;
       border: none;
-      border-left: 1px solid rgba(255, 255, 255, 0.35);
-      color: rgba(255, 255, 255, 0.7);
+      border-left: 1px solid rgba(196, 166, 96, 0.38);
+      color: rgba(196, 166, 96, 0.70);
       padding: 0 18px;
       font-size: 18px;
       cursor: pointer;
@@ -98,17 +126,59 @@
     }
 
     .password-submit-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.08);
+      color: rgba(238, 218, 168, 1);
+      background: rgba(196, 166, 96, 0.08);
     }
 
     .password-error {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Cinzel', serif;
       font-size: 9px;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.20em;
       text-transform: uppercase;
-      color: #ff4444;
+      color: #ff6644;
       margin-top: 14px;
+    }
+
+    /* ── Bottom ticker — fixed, Cinzel ─────────────────────────────── */
+    .pw-bottom-ticker {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      height: 30px;
+      background: rgba(10, 8, 4, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(180, 148, 72, 0.22);
+      overflow: hidden;
+    }
+
+    .pw-bottom-ticker .ticker-track {
+      display: inline-block;
+      white-space: nowrap;
+      line-height: 30px;
+      animation: ticker-scroll 90s linear infinite;
+      font-family: 'Cinzel', serif !important;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      color: rgba(206, 174, 100, 0.80);
+    }
+
+    .pw-bottom-ticker .ticker-track a {
+      font-family: 'Cinzel', serif !important;
+      color: rgba(206, 174, 100, 0.80);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .pw-bottom-ticker .ticker-track a:hover {
+      color: rgba(238, 218, 168, 1);
+    }
+
+    .pw-bottom-ticker .ticker-sep {
+      color: rgba(180, 148, 72, 0.45);
+      margin: 0 14px;
     }
   </style>
 </head>
@@ -117,14 +187,11 @@
   <!-- TV STATIC CANVAS -->
   <canvas id="staticCanvas"></canvas>
 
-  <!-- POLYMARKET TICKER -->
-  <div class="site-ticker">
-    <div class="ticker-track" id="tickerTrack"></div>
-  </div>
-
   <!-- PASSWORD GATE -->
   <main class="password-gate">
     <div class="password-form-wrap">
+      <p class="pw-brand">POLYMARKET</p>
+      <p class="pw-year">MMXXVI</p>
       <h1>Enter Password</h1>
       <form id="passwordForm">
         <div class="password-input-row">
@@ -142,12 +209,16 @@
     </div>
   </main>
 
+  <!-- TICKER — fixed bottom, Cinzel -->
+  <div class="pw-bottom-ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
   <script>
     // ── TV Static + Glitches ─────────────────────────────────────────────
     const canvas = document.getElementById('staticCanvas');
     const ctx    = canvas.getContext('2d');
 
-    // Render at half resolution for chunky retro pixel blocks + 4× perf gain
     const SCALE = 2;
     let W, H;
 
@@ -161,23 +232,20 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // ── Active glitch list ───────────────────────────────────────────────
     const glitches = [];
 
     function spawnGlitch() {
       const roll = Math.random();
 
       if (roll < 0.30) {
-        // Bright horizontal scan band (signal spike)
         glitches.push({
           kind: 'band',
           y:    (Math.random() * 0.85 * H) | 0,
           h:    (1 + Math.random() * 8)    | 0,
-          v:    170 + (Math.random() * 85) | 0,   // brightness
+          v:    170 + (Math.random() * 85) | 0,
           life: 1, decay: 0.10 + Math.random() * 0.18
         });
       } else if (roll < 0.55) {
-        // Dark dropout strip (signal loss)
         glitches.push({
           kind: 'dropout',
           y:    (Math.random() * 0.85 * H) | 0,
@@ -185,7 +253,6 @@
           life: 1, decay: 0.09 + Math.random() * 0.14
         });
       } else if (roll < 0.75) {
-        // Horizontal tear — lines shift sideways (VHS tracking error)
         const count = 1 + (Math.random() * 3 | 0);
         glitches.push({
           kind:  'tear',
@@ -197,14 +264,12 @@
           life: 1, decay: 0.20 + Math.random() * 0.30
         });
       } else if (roll < 0.90) {
-        // Full-frame brightness flicker
         glitches.push({
           kind: 'flicker',
           boost: 20 + (Math.random() * 30) | 0,
           life: 1, decay: 0.25 + Math.random() * 0.40
         });
       } else {
-        // Ghost echo — faint duplicate of the frame shifted up/down
         glitches.push({
           kind:    'ghost',
           yShift:  ((Math.random() > 0.5 ? 1 : -1) * (4 + Math.random() * 14)) | 0,
@@ -214,19 +279,15 @@
       }
     }
 
-    // Schedule glitches at random intervals (2–7 s apart)
     function scheduleGlitch() {
       setTimeout(() => { spawnGlitch(); scheduleGlitch(); },
         2000 + Math.random() * 5000);
     }
-    // Kick off with a short initial delay so the page has time to load
     setTimeout(scheduleGlitch, 800);
 
-    // ── Draw loop (capped at ~24 fps for authentic old-TV feel) ──────────
     let lastTs  = 0;
     const FRAME = 1000 / 24;
 
-    // Offscreen canvas for ghost effect
     const ghost = document.createElement('canvas');
     const gCtx  = ghost.getContext('2d');
 
@@ -235,53 +296,45 @@
       if (ts - lastTs < FRAME) return;
       lastTs = ts;
 
-      // Collect active effects
       const flickerG = glitches.find(g => g.kind === 'flicker');
       const boost    = flickerG ? flickerG.boost * flickerG.life : 0;
 
-      // ── Base noise (mostly dark, sparse bright sparks) ────────────────
       const img  = ctx.createImageData(W, H);
       const data = img.data;
 
       for (let i = 0; i < data.length; i += 4) {
         const r = Math.random();
         let v;
-        if      (r < 0.62) v = Math.random() * 28;          // dark dominant
-        else if (r < 0.88) v = 28 + Math.random() * 55;     // mid grain
-        else               v = 83 + Math.random() * 120;    // occasional bright spark
+        if      (r < 0.62) v = Math.random() * 28;
+        else if (r < 0.88) v = 28 + Math.random() * 55;
+        else               v = 83 + Math.random() * 120;
         v = Math.min(255, v + boost) | 0;
         data[i] = data[i+1] = data[i+2] = v;
         data[i+3] = 255;
       }
       ctx.putImageData(img, 0, 0);
 
-      // ── Tear lines (shift horizontal strips sideways) ─────────────────
       glitches.filter(g => g.kind === 'tear').forEach(g => {
         g.lines.forEach(ln => {
-          // Read the strip from the noise we just drew
           const strip = ctx.getImageData(0, ln.y, W, ln.h);
           ctx.putImageData(strip, ln.shift, ln.y);
-          // Fill the vacated edge with near-black
           ctx.fillStyle = 'rgba(0,0,0,0.9)';
           if (ln.shift > 0) ctx.fillRect(0, ln.y, ln.shift, ln.h);
           else              ctx.fillRect(W + ln.shift, ln.y, -ln.shift, ln.h);
         });
       });
 
-      // ── Bright scan bands ─────────────────────────────────────────────
       glitches.filter(g => g.kind === 'band').forEach(g => {
         const v = g.v;
         ctx.fillStyle = `rgba(${v},${v},${v},${0.82 * g.life})`;
         ctx.fillRect(0, g.y, W, g.h);
       });
 
-      // ── Dark dropout bands ────────────────────────────────────────────
       glitches.filter(g => g.kind === 'dropout').forEach(g => {
         ctx.fillStyle = `rgba(0,0,0,${0.88 * g.life})`;
         ctx.fillRect(0, g.y, W, g.h);
       });
 
-      // ── Ghost echo ────────────────────────────────────────────────────
       glitches.filter(g => g.kind === 'ghost').forEach(g => {
         ghost.width  = W;
         ghost.height = H;
@@ -292,7 +345,6 @@
         ctx.restore();
       });
 
-      // ── Decay & remove expired glitches ──────────────────────────────
       for (let i = glitches.length - 1; i >= 0; i--) {
         glitches[i].life -= glitches[i].decay;
         if (glitches[i].life <= 0) glitches.splice(i, 1);
@@ -320,9 +372,9 @@
         errorEl.style.display = 'block';
         input.value = '';
         input.focus();
-        input.closest('.password-input-row').style.borderColor = '#ff4444';
+        input.closest('.password-input-row').style.borderColor = 'rgba(255,80,40,0.7)';
         setTimeout(() => {
-          input.closest('.password-input-row').style.borderColor = 'rgba(255,255,255,0.35)';
+          input.closest('.password-input-row').style.borderColor = 'rgba(196,166,96,0.38)';
         }, 1200);
       }
     });
