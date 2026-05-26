@@ -859,6 +859,9 @@ img { display: block; max-width: 100%; }
   .related-grid { grid-template-columns: repeat(2, 1fr); }
   .cart-drawer { width: 100%; }
 
+  /* Footer — hide certain links on mobile */
+  .footer-mobile-hide { display: none; }
+
   /* Footer — same height as header, single line */
   .site-footer { padding: 0 14px; }
   .footer-inner {
