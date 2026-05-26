@@ -122,20 +122,7 @@ function closeCart() {
 function proceedToCheckout() {
   const cart = getCart();
   if (cart.length === 0) return;
-
-  // TODO: Replace with Shopify Storefront API call
-  // For now, builds a simple Shopify cart URL using variant IDs
-  // Format: /cart/VARIANT_ID:QTY,VARIANT_ID:QTY
-  const lineItems = cart.map(item => `${item.shopifyVariantId || '0'}:${item.qty || 1}`).join(',');
-  const shopifyStore = 'YOUR-STORE.myshopify.com'; // ← replace with your store
-
-  // Uncomment once Shopify is connected:
-  // window.location.href = `https://${shopifyStore}/cart/${lineItems}`;
-
-  alert(`Checkout coming soon!\n\nYour cart:\n${cart.map(i => {
-    const color = i.color ? ` / ${i.color}` : '';
-    return `• ${i.name}${color} (${i.size}) ×${i.qty}`;
-  }).join('\n')}`);
+  window.location.href = 'checkout.html';
 }
 
 // Wire up cart toggle buttons
