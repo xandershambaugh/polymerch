@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket — Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .password-gate { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
+  </style>
+</head>
+<body class="password-page-body">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <!-- Polymarket P logo -->
+        <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="22" height="22" rx="4" fill="#0038FF"/>
+          <path d="M7 6h5.5C14.433 6 16 7.567 16 9.5S14.433 13 12.5 13H9v3H7V6z" fill="white"/>
+          <rect x="9" y="9" width="3.2" height="2" rx="1" fill="#0038FF"/>
+        </svg>
+        Polymarket
+      </a>
+
+      <div class="nav-center">
+        <a href="shop.html">SHOP</a>
+        <a href="shipping.html">SHIPPING &amp; RETURNS</a>
+        <button class="currency-btn">US / $</button>
+      </div>
+
+      <div class="nav-right">
+        <div class="nav-divider" style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+        <!-- Account -->
+        <button class="nav-icon-btn" title="Account">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+        <!-- Search -->
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M15 15l-3-3"/>
+          </svg>
+        </button>
+        <!-- Cart -->
+        <button class="nav-icon-btn" id="cartToggle" title="Cart">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h2l2.5 9.5h9L18 6H6"/>
+            <circle cx="9" cy="17" r="1"/>
+            <circle cx="15" cy="17" r="1"/>
+          </svg>
+          <span class="cart-badge" id="cartCount" style="display:none">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PASSWORD GATE -->
+  <main class="password-gate">
+    <div class="password-form-wrap">
+      <h1>Enter Password</h1>
+      <form id="passwordForm">
+        <div class="password-input-row">
+          <input
+            type="password"
+            id="passwordInput"
+            placeholder="PASSWORD"
+            autocomplete="current-password"
+            required
+          />
+          <button type="submit" class="password-submit-btn">→</button>
+        </div>
+      </form>
+      <p class="password-error" id="passwordError" style="display:none;">Incorrect password. Try again.</p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <rect width="18" height="18" rx="3" fill="white" fill-opacity="0.2"/>
+          <path d="M5.5 5h4.5C11.88 5 13 6.12 13 7.5S11.88 10 10.5 10H7.5v2.5H5.5V5z" fill="white"/>
+        </svg>
+        Polymarket
+      </div>
+      <nav class="footer-links">
+        <a href="#">Contact Us</a>
+        <a href="#">Accessibility</a>
+        <a href="#">Terms &amp; Conditions</a>
+        <a href="#">Subscribe</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Returns</a>
+      </nav>
+      <span class="footer-copy">©2026</span>
+    </div>
+  </footer>
+
+  <script>
+    // Simple password gate — change PASSWORD_HASH for production
+    // For Shopify-connected deployment, replace with server-side auth
+    const CORRECT_PASSWORD = 'polymarket2026'; // ← change before launch
+
+    const form = document.getElementById('passwordForm');
+    const input = document.getElementById('passwordInput');
+    const errorEl = document.getElementById('passwordError');
+
+    // Already authenticated this session?
+    if (sessionStorage.getItem('pm_auth') === 'true') {
+      window.location.replace('shop.html');
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value === CORRECT_PASSWORD) {
+        sessionStorage.setItem('pm_auth', 'true');
+        window.location.replace('shop.html');
+      } else {
+        errorEl.style.display = 'block';
+        input.value = '';
+        input.focus();
+        input.closest('.password-input-row').style.borderColor = '#FF3B30';
+        setTimeout(() => {
+          input.closest('.password-input-row').style.borderColor = 'var(--black)';
+        }, 1200);
+      }
+    });
+
+    input.addEventListener('input', () => {
+      errorEl.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

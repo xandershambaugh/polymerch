@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Royal Slides — Polymarket</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="../index.html" class="nav-logo">
+        <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="22" height="22" rx="4" fill="white" fill-opacity="0.18"/>
+          <path d="M7 6h5.5C14.433 6 16 7.567 16 9.5S14.433 13 12.5 13H9v3H7V6z" fill="white"/>
+          <rect x="9" y="9" width="3.2" height="2" rx="1" fill="#0038FF"/>
+        </svg>
+        Polymarket
+      </a>
+
+      <div class="nav-center">
+        <a href="../shop.html">SHOP</a>
+        <a href="../shipping.html">SHIPPING &amp; RETURNS</a>
+        <button class="currency-btn">US / $</button>
+      </div>
+
+      <div class="nav-right">
+        <div style="height:16px;width:1px;background:rgba(255,255,255,0.3);margin:0 4px;"></div>
+        <button class="nav-icon-btn" title="Account">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M15 15l-3-3"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" id="cartToggle" title="Cart">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h2l2.5 9.5h9L18 6H6"/>
+            <circle cx="9" cy="17" r="1"/>
+            <circle cx="15" cy="17" r="1"/>
+          </svg>
+          <span class="cart-badge" id="cartCount" style="display:none">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PRODUCT DETAIL -->
+  <main class="product-detail-main">
+    <div class="product-detail-layout">
+
+      <!-- LEFT: Product Image -->
+      <div class="product-image-col">
+        <!--
+          Replace the placeholder below with an <img> tag pointing to
+          the actual product photo once images are added to /assets/images/
+          Example:
+          <img src="../assets/images/royal-slides-main.jpg" alt="Royal Slides">
+        -->
+        <div class="product-image-placeholder">[ Product Image ]</div>
+      </div>
+
+      <!-- RIGHT: Product Info -->
+      <div class="product-info-col">
+
+        <!-- Size validation error — shown when user clicks Add without selecting size -->
+        <div class="size-error-badge hidden" id="sizeError">SELECT A SIZE*</div>
+
+        <!-- Product title block — all inline with slash separators, matching wireframe -->
+        <p class="product-title-block">
+          ROYAL SLIDES
+          <span class="slash">/</span>
+          WOAD-DYED COTTON
+          <span class="slash">/</span>
+          SIZE
+          <span class="size-select-inline">
+            <select id="sizeSelect" onchange="clearSizeError()">
+              <option value="">—</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+            </select>
+          </span>
+          <span class="slash">/</span>
+          <a href="#size-guide" class="underline-link">SIZE GUIDE</a>
+          <span class="slash">/</span>
+          $129
+          <span class="slash">/</span>
+          <span class="product-cta-add underline-link" onclick="handleAddToBag()">ADD TO BAG</span>
+          <span class="slash">/</span>
+          <span class="product-cta-buy" onclick="handleBuyNow()">BUY NOW</span>
+        </p>
+
+        <!-- Subscribe Block -->
+        <div class="product-subscribe-block">
+          <p class="sub-label">Subscribe</p>
+          <form class="product-sub-row" onsubmit="handleProductSubscribe(event)">
+            <input type="email" placeholder="Email*" required />
+            <button type="submit" class="product-sub-btn">→</button>
+          </form>
+          <p class="product-sub-fine">
+            Sign up to stay connected with Polymarket merch through updates on new arrivals, news, and launches.
+            For more information, please see the <a href="#">Privacy Policy</a>.
+          </p>
+        </div>
+
+      </div><!-- /.product-info-col -->
+    </div><!-- /.product-detail-layout -->
+
+    <!-- SIZE GUIDE (hidden by default, scroll anchor) -->
+    <div id="size-guide" style="padding:40px 48px;border-top:1px solid #e0e0e0;max-width:600px;">
+      <h2 style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;font-weight:400;">SIZE GUIDE</h2>
+      <table style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.04em;border-collapse:collapse;width:100%;">
+        <thead>
+          <tr style="border-bottom:1px solid #e0e0e0;">
+            <th style="text-align:left;padding:8px 0;font-weight:700;">US SIZE</th>
+            <th style="text-align:left;padding:8px 0;font-weight:700;">EU SIZE</th>
+            <th style="text-align:left;padding:8px 0;font-weight:700;">UK SIZE</th>
+            <th style="text-align:left;padding:8px 0;font-weight:700;">LENGTH (cm)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:6px 0;">6</td><td>38</td><td>5.5</td><td>24</td></tr>
+          <tr><td style="padding:6px 0;">7</td><td>39</td><td>6.5</td><td>25</td></tr>
+          <tr><td style="padding:6px 0;">8</td><td>40–41</td><td>7.5</td><td>26</td></tr>
+          <tr><td style="padding:6px 0;">9</td><td>42</td><td>8.5</td><td>27</td></tr>
+          <tr><td style="padding:6px 0;">10</td><td>43</td><td>9.5</td><td>28</td></tr>
+          <tr><td style="padding:6px 0;">11</td><td>44–45</td><td>10.5</td><td>29</td></tr>
+          <tr><td style="padding:6px 0;">12</td><td>46</td><td>11.5</td><td>30</td></tr>
+          <tr><td style="padding:6px 0;">13</td><td>47</td><td>12.5</td><td>31</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <div class="related-products-section">
+      <div class="related-heading">
+        <a href="../shop.html">SHOP COLLECTION <span class="arrow">→</span></a>
+      </div>
+      <div class="related-grid">
+        <a href="human-intelligence-tee.html" class="related-card">
+          <div class="related-card-placeholder">Human Intelligence Tee</div>
+          <div class="related-card-overlay">HUMAN INTELLIGENCE TEE / $69</div>
+        </a>
+        <a href="polymarket-cap.html" class="related-card">
+          <div class="related-card-placeholder">Polymarket Cap</div>
+          <div class="related-card-overlay">POLYMARKET CAP / $49</div>
+        </a>
+        <a href="quarter-zip.html" class="related-card">
+          <div class="related-card-placeholder">Poly Quarter-Zip</div>
+          <div class="related-card-overlay">POLY QUARTER-ZIP / $129</div>
+        </a>
+        <a href="illustrated-tote.html" class="related-card">
+          <div class="related-card-placeholder">Illustrated Tote</div>
+          <div class="related-card-overlay">ILLUSTRATED TOTE / $89</div>
+        </a>
+        <a href="navy-track-jacket.html" class="related-card">
+          <div class="related-card-placeholder">Navy Track Jacket</div>
+          <div class="related-card-overlay">NAVY TRACK JACKET / $189</div>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <rect width="18" height="18" rx="3" fill="white" fill-opacity="0.2"/>
+          <path d="M5.5 5h4.5C11.88 5 13 6.12 13 7.5S11.88 10 10.5 10H7.5v2.5H5.5V5z" fill="white"/>
+        </svg>
+        Polymarket
+      </div>
+      <nav class="footer-links">
+        <a href="#">Contact Us</a>
+        <a href="#">Accessibility</a>
+        <a href="#">Terms &amp; Conditions</a>
+        <a href="#">Subscribe</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Returns</a>
+      </nav>
+      <span class="footer-copy">©2026</span>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h2>Your Bag</h2>
+      <button class="cart-close-btn" id="cartClose">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty" id="cartEmpty">Your bag is empty.</div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-subtotal">
+        <span>SUBTOTAL</span>
+        <span id="cartSubtotal">$0</span>
+      </div>
+      <button class="checkout-btn" onclick="proceedToCheckout()">CHECKOUT</button>
+    </div>
+  </aside>
+
+  <script src="../js/cart.js"></script>
+  <script>
+    // Auth guard
+    if (sessionStorage.getItem('pm_auth') !== 'true') {
+      window.location.replace('../index.html');
+    }
+
+    // Product data for this item
+    const PRODUCT = {
+      id: 'royal-slides',
+      name: 'ROYAL SLIDES / WOAD-DYED COTTON',
+      price: 129,
+      // shopifyVariantId will be set per-size once Shopify variants are created
+      // shopifyVariantId: '...',
+    };
+
+    function clearSizeError() {
+      document.getElementById('sizeError').classList.add('hidden');
+    }
+
+    function getSelectedSize() {
+      return document.getElementById('sizeSelect').value;
+    }
+
+    function handleAddToBag() {
+      const size = getSelectedSize();
+      if (!size) {
+        document.getElementById('sizeError').classList.remove('hidden');
+        return;
+      }
+      addToCart({
+        ...PRODUCT,
+        size,
+        // image: '../assets/images/royal-slides-thumb.jpg', // uncomment when images added
+      });
+    }
+
+    function handleBuyNow() {
+      const size = getSelectedSize();
+      if (!size) {
+        document.getElementById('sizeError').classList.remove('hidden');
+        return;
+      }
+      addToCart({ ...PRODUCT, size });
+      proceedToCheckout();
+    }
+
+    function handleProductSubscribe(e) {
+      e.preventDefault();
+      alert('Thanks for subscribing!');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping &amp; Returns — Polymarket</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .info-page { flex: 1; padding: 56px 48px; max-width: 720px; }
+    .info-page h1 {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin-bottom: 40px;
+    }
+    .info-section { margin-bottom: 40px; }
+    .info-section h2 {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+    .info-section p, .info-section li {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      line-height: 1.8;
+      color: #333;
+    }
+    .info-section ul { list-style: none; padding: 0; }
+    .info-section ul li::before { content: '— '; }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      margin-top: 4px;
+    }
+    .info-table th {
+      text-align: left;
+      padding: 8px 0;
+      font-weight: 700;
+      border-bottom: 1px solid #e0e0e0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 10px;
+    }
+    .info-table td { padding: 8px 0; border-bottom: 1px solid #f0f0f0; color: #333; }
+    @media (max-width: 640px) { .info-page { padding: 36px 20px; } }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="22" height="22" rx="4" fill="#0038FF"/>
+          <path d="M7 6h5.5C14.433 6 16 7.567 16 9.5S14.433 13 12.5 13H9v3H7V6z" fill="white"/>
+          <rect x="9" y="9" width="3.2" height="2" rx="1" fill="#0038FF"/>
+        </svg>
+        Polymarket
+      </a>
+      <div class="nav-center">
+        <a href="shop.html">SHOP</a>
+        <a href="shipping.html">SHIPPING &amp; RETURNS</a>
+        <button class="currency-btn">US / $</button>
+      </div>
+      <div class="nav-right">
+        <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+        <button class="nav-icon-btn" title="Account">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M15 15l-3-3"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" id="cartToggle" title="Cart">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h2l2.5 9.5h9L18 6H6"/>
+            <circle cx="9" cy="17" r="1"/>
+            <circle cx="15" cy="17" r="1"/>
+          </svg>
+          <span class="cart-badge" id="cartCount" style="display:none">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main style="flex:1;display:flex;">
+    <div class="info-page">
+      <h1>Shipping &amp; Returns</h1>
+
+      <div class="info-section">
+        <h2>Domestic Shipping (US)</h2>
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Estimated Delivery</th>
+              <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Standard</td><td>5–7 business days</td><td>$8</td></tr>
+            <tr><td>Expedited</td><td>2–3 business days</td><td>$18</td></tr>
+            <tr><td>Overnight</td><td>Next business day</td><td>$35</td></tr>
+            <tr><td>Free Standard</td><td>5–7 business days</td><td>On orders over $150</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-section">
+        <h2>International Shipping</h2>
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>Region</th>
+              <th>Estimated Delivery</th>
+              <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Canada</td><td>7–10 business days</td><td>$20</td></tr>
+            <tr><td>Europe</td><td>10–14 business days</td><td>$30</td></tr>
+            <tr><td>Rest of World</td><td>14–21 business days</td><td>$40</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px;">International orders may be subject to customs duties and taxes imposed by the destination country. These charges are the responsibility of the recipient.</p>
+      </div>
+
+      <div class="info-section">
+        <h2>Returns &amp; Exchanges</h2>
+        <ul>
+          <li>Items may be returned within 30 days of delivery for a full refund.</li>
+          <li>Items must be unworn, unwashed, and in original packaging with tags attached.</li>
+          <li>Sale items are final sale and not eligible for return or exchange.</li>
+          <li>To initiate a return, contact us at <a href="mailto:merch@polymarket.com" style="text-decoration:underline;">merch@polymarket.com</a> with your order number.</li>
+          <li>Return shipping costs are the responsibility of the customer unless the item is defective.</li>
+          <li>Exchanges are subject to availability. We recommend returning and placing a new order.</li>
+          <li>Refunds are processed within 5–7 business days of receiving the return.</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h2>Order Processing</h2>
+        <ul>
+          <li>Orders are processed within 1–2 business days.</li>
+          <li>Orders placed on weekends or holidays will begin processing the next business day.</li>
+          <li>A shipping confirmation with tracking number will be emailed once your order ships.</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h2>Contact</h2>
+        <p>For all shipping and returns inquiries, email <a href="mailto:merch@polymarket.com" style="text-decoration:underline;">merch@polymarket.com</a>.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <rect width="18" height="18" rx="3" fill="white" fill-opacity="0.2"/>
+          <path d="M5.5 5h4.5C11.88 5 13 6.12 13 7.5S11.88 10 10.5 10H7.5v2.5H5.5V5z" fill="white"/>
+        </svg>
+        Polymarket
+      </div>
+      <nav class="footer-links">
+        <a href="#">Contact Us</a>
+        <a href="#">Accessibility</a>
+        <a href="#">Terms &amp; Conditions</a>
+        <a href="#">Subscribe</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Returns</a>
+      </nav>
+      <span class="footer-copy">©2026</span>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h2>Your Bag</h2>
+      <button class="cart-close-btn" id="cartClose">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty" id="cartEmpty">Your bag is empty.</div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-subtotal">
+        <span>SUBTOTAL</span>
+        <span id="cartSubtotal">$0</span>
+      </div>
+      <button class="checkout-btn" onclick="proceedToCheckout()">CHECKOUT</button>
+    </div>
+  </aside>
+
+  <script src="js/cart.js"></script>
+  <script>
+    if (sessionStorage.getItem('pm_auth') !== 'true') {
+      window.location.replace('index.html');
+    }
+  </script>
+</body>
+</html>

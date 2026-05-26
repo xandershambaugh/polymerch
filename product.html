@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket — Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── OJAS-style product layout ── */
+    .pdp-wrap {
+      display: grid;
+      grid-template-columns: 60fr 40fr;
+      align-items: start;          /* columns are independent height */
+    }
+
+    /* LEFT — scrollable image stack */
+    .pdp-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;                    /* hairline gap between images */
+    }
+
+    .pdp-gallery img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #f4f4f4;
+    }
+
+    /* RIGHT — sticky info panel */
+    .pdp-info {
+      position: sticky;
+      top: 52px;                   /* below the nav */
+      height: calc(100vh - 52px);
+      overflow-y: auto;
+      padding: 48px 44px 48px 52px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      scrollbar-width: none;
+    }
+    .pdp-info::-webkit-scrollbar { display: none; }
+
+    /* Size error badge */
+    .size-err {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    .size-err.hidden { display: none; }
+
+    /* Main product text block — inline slash format */
+    .pdp-title {
+      font-family: var(--font-mono);
+      font-size: clamp(15px, 1.9vw, 24px);
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-weight: 400;
+      color: var(--black);
+    }
+
+    .pdp-title .slash { margin: 0 5px; }
+
+    .pdp-title .u {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+    .pdp-title .u:hover { opacity: 0.55; }
+
+    /* Inline size select */
+    .size-wrap {
+      display: inline-block;
+      position: relative;
+    }
+    .size-wrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: none;
+      border-bottom: 1.5px solid var(--black);
+      font-family: var(--font-mono);
+      font-size: inherit;
+      letter-spacing: inherit;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding-right: 16px;
+      outline: none;
+      color: var(--black);
+    }
+    .size-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 11px;
+    }
+
+    /* Subscribe block */
+    .pdp-subscribe {
+      margin-top: 48px;
+      background: var(--black);
+      color: var(--white);
+      padding: 20px 22px;
+      max-width: 340px;
+    }
+    .pdp-subscribe .sub-label {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .pdp-sub-row {
+      display: flex;
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+    .pdp-sub-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+    .pdp-sub-row input::placeholder { color: rgba(255,255,255,0.4); }
+    .pdp-sub-btn {
+      color: var(--white);
+      padding: 0 14px;
+      font-size: 16px;
+      border-left: 1px solid rgba(255,255,255,0.35);
+      transition: background 0.15s;
+    }
+    .pdp-sub-btn:hover { background: rgba(255,255,255,0.08); }
+    .pdp-sub-fine {
+      font-size: 9px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 9px;
+      line-height: 1.5;
+    }
+    .pdp-sub-fine a { color: rgba(255,255,255,0.55); text-decoration: underline; }
+
+    /* Size guide table below images */
+    .size-guide-wrap {
+      padding: 40px 0 0;
+      display: none;
+    }
+    .size-guide-wrap h3 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .size-guide-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+    }
+    .size-guide-wrap th {
+      text-align: left;
+      padding: 7px 0;
+      font-weight: 700;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .size-guide-wrap td {
+      padding: 6px 0;
+      border-bottom: 1px solid #f2f2f2;
+      color: #333;
+    }
+
+    /* Related row */
+    .pdp-related { border-top: 1px solid #e8e8e8; }
+
+    /* Mobile */
+    @media (max-width: 860px) {
+      .pdp-wrap { grid-template-columns: 1fr; }
+      .pdp-info {
+        position: relative;
+        top: auto;
+        height: auto;
+        padding: 28px 20px 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="22" height="22" rx="4" fill="#0038FF"/>
+          <path d="M7 6h5.5C14.433 6 16 7.567 16 9.5S14.433 13 12.5 13H9v3H7V6z" fill="white"/>
+          <rect x="9" y="9" width="3.2" height="2" rx="1" fill="#0038FF"/>
+        </svg>
+        Polymarket
+      </a>
+      <div class="nav-center">
+        <a href="shop.html">SHOP</a>
+        <a href="shipping.html">SHIPPING &amp; RETURNS</a>
+        <button class="currency-btn">US / $</button>
+      </div>
+      <div class="nav-right">
+        <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+        <button class="nav-icon-btn" title="Account">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M15 15l-3-3"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" id="cartToggle" title="Cart">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h2l2.5 9.5h9L18 6H6"/>
+            <circle cx="9" cy="17" r="1"/>
+            <circle cx="15" cy="17" r="1"/>
+          </svg>
+          <span class="cart-badge" id="cartCount" style="display:none">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- PRODUCT DETAIL -->
+  <main id="productMain">
+
+    <div class="pdp-wrap">
+
+      <!-- LEFT: scrollable image gallery -->
+      <div class="pdp-gallery" id="pdpGallery">
+        <!-- Images injected by JS -->
+      </div>
+
+      <!-- RIGHT: sticky product info -->
+      <div class="pdp-info">
+
+        <div class="size-err hidden" id="sizeError">SELECT A SIZE*</div>
+
+        <p class="pdp-title" id="pdpTitle">
+          <!-- Populated by JS -->
+        </p>
+
+        <!-- Subscribe -->
+        <div class="pdp-subscribe">
+          <p class="sub-label">Subscribe</p>
+          <form class="pdp-sub-row" onsubmit="handleSub(event)">
+            <input type="email" placeholder="Email*" required />
+            <button type="submit" class="pdp-sub-btn">→</button>
+          </form>
+          <p class="pdp-sub-fine">Stay connected with Polymarket merch updates. See the <a href="#">Privacy Policy</a>.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Size guide (rendered below image stack, toggled from info panel) -->
+    <div class="size-guide-wrap" id="sizeGuideWrap" style="padding: 40px 48px; max-width:640px;">
+      <h3>Size Guide</h3>
+      <table id="sizeGuideTable"></table>
+    </div>
+
+    <!-- Related products -->
+    <div class="pdp-related">
+      <div class="shop-heading"><a href="shop.html">SHOP COLLECTION <span class="arrow">→</span></a></div>
+      <div class="related-grid" id="relatedGrid"></div>
+    </div>
+
+  </main>
+
+  <!-- 404 -->
+  <div id="notFound" style="display:none;flex:1;align-items:center;justify-content:center;padding:80px 20px;text-align:center;">
+    <div>
+      <p style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;">Product not found.</p>
+      <a href="shop.html" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;text-decoration:underline;">← Back to Shop</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <rect width="18" height="18" rx="3" fill="white" fill-opacity="0.2"/>
+          <path d="M5.5 5h4.5C11.88 5 13 6.12 13 7.5S11.88 10 10.5 10H7.5v2.5H5.5V5z" fill="white"/>
+        </svg>
+        Polymarket
+      </div>
+      <nav class="footer-links">
+        <a href="#">Contact Us</a>
+        <a href="#">Accessibility</a>
+        <a href="#">Terms &amp; Conditions</a>
+        <a href="#">Subscribe</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Returns</a>
+      </nav>
+      <span class="footer-copy">©2026</span>
+    </div>
+  </footer>
+
+  <!-- CART DRAWER -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h2>Your Bag</h2>
+      <button class="cart-close-btn" id="cartClose">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty" id="cartEmpty">Your bag is empty.</div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-subtotal"><span>SUBTOTAL</span><span id="cartSubtotal">$0</span></div>
+      <button class="checkout-btn" onclick="proceedToCheckout()">CHECKOUT</button>
+    </div>
+  </aside>
+
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    if (sessionStorage.getItem('pm_auth') !== 'true') {
+      window.location.replace('index.html');
+    }
+
+    const params  = new URLSearchParams(window.location.search);
+    const product = getProductById(params.get('id'));
+
+    if (!product) {
+      document.getElementById('productMain').style.display = 'none';
+      document.getElementById('notFound').style.display = 'flex';
+    } else {
+      document.title = `${product.name} — Polymarket`;
+
+      // Build image gallery from product.images array
+      const gallery = document.getElementById('pdpGallery');
+      const allImages = product.images && product.images.length ? product.images : [];
+
+      allImages.forEach((src, i) => {
+        const el = document.createElement('img');
+        el.src = src;
+        el.alt = `${product.name} — view ${i + 1}`;
+        el.loading = i === 0 ? 'eager' : 'lazy';
+        gallery.appendChild(el);
+      });
+
+      // Build size select
+      const isOneSize = product.sizeType === 'one-size';
+      let sizeHTML = '';
+      if (isOneSize) {
+        sizeHTML = `<select id="sizeSelect" style="display:none"><option value="ONE SIZE">ONE SIZE</option></select>ONE SIZE`;
+      } else {
+        const opts = product.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
+        sizeHTML = `<span class="size-wrap"><select id="sizeSelect" onchange="clearErr()"><option value="">—</option>${opts}</select></span>`;
+      }
+
+      // Size guide link
+      const sgLink = product.sizeGuide
+        ? `<span class="slash">/</span><a class="u" onclick="toggleSizeGuide()">SIZE GUIDE</a>`
+        : '';
+
+      // Inject title block (OJAS-style inline slash format)
+      document.getElementById('pdpTitle').innerHTML = `
+        ${product.name}
+        <span class="slash">/</span>${product.material}
+        <span class="slash">/</span>${isOneSize ? 'ONE SIZE' : `SIZE ${sizeHTML}`}
+        ${sgLink}
+        <span class="slash">/</span>$${product.price}
+        <span class="slash">/</span><span class="u" onclick="handleAdd()">ADD TO BAG</span>
+        <span class="slash">/</span><span style="cursor:pointer;" onclick="handleBuy()">BUY NOW</span>
+      `;
+
+      // Size guide table
+      if (product.sizeGuide) {
+        const table = document.getElementById('sizeGuideTable');
+        table.innerHTML = `
+          <thead><tr>
+            <th>US</th><th>EU</th><th>UK</th><th>CM</th>
+          </tr></thead>
+          <tbody>${product.sizeGuide.map(r =>
+            `<tr><td>${r.us}</td><td>${r.eu}</td><td>${r.uk}</td><td>${r.cm}</td></tr>`
+          ).join('')}</tbody>`;
+      }
+
+      // Related products
+      const related = PRODUCTS.filter(p => p.id !== product.id).slice(0, 5);
+      document.getElementById('relatedGrid').innerHTML = related.map(p => {
+        const rSrc = p.images && p.images[0] ? p.images[0] : null;
+        return `
+          <a href="product.html?id=${p.id}" class="related-card">
+            ${rSrc
+              ? `<img src="${rSrc}" alt="${p.name}">`
+              : `<div class="related-card-placeholder">${p.name}</div>`}
+            <div class="related-card-overlay">${p.name} / $${p.price}</div>
+          </a>`;
+      }).join('');
+    }
+
+    // Actions
+    function clearErr() { document.getElementById('sizeError').classList.add('hidden'); }
+
+    function getSize() {
+      const s = document.getElementById('sizeSelect');
+      return s ? s.value : 'ONE SIZE';
+    }
+
+    function toggleSizeGuide() {
+      const el = document.getElementById('sizeGuideWrap');
+      const visible = el.style.display !== 'none' && el.style.display !== '';
+      el.style.display = visible ? 'none' : 'block';
+      if (!visible) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function handleAdd() {
+      const size = getSize();
+      if (!size) { document.getElementById('sizeError').classList.remove('hidden'); return; }
+      addToCart({
+        id: product.id, name: product.name, price: product.price, size,
+        image: product.images && product.images[0] ? product.images[0] : null,
+        shopifyVariantId: product.shopifyVariants[size] || null,
+      });
+    }
+
+    function handleBuy() {
+      const size = getSize();
+      if (!size) { document.getElementById('sizeError').classList.remove('hidden'); return; }
+      addToCart({
+        id: product.id, name: product.name, price: product.price, size,
+        image: product.images && product.images[0] ? product.images[0] : null,
+        shopifyVariantId: product.shopifyVariants[size] || null,
+      });
+      proceedToCheckout();
+    }
+
+    function handleSub(e) { e.preventDefault(); alert('Thanks for subscribing!'); e.target.reset(); }
+  </script>
+</body>
+</html>
