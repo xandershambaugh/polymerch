@@ -9,11 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── OJAS-style product layout ── */
+    /* ── Dot grid background (Kiko-style) ── */
+    #productMain {
+      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
+      background-size: 22px 22px;
+      background-color: #fff;
+    }
+
+    /* ── Product layout ── */
     .pdp-wrap {
       display: grid;
       grid-template-columns: 60fr 40fr;
-      align-items: start;          /* columns are independent height */
+      align-items: start;
     }
 
     /* LEFT — 2-column tile grid (front + back side by side) */
@@ -41,7 +48,7 @@
     /* RIGHT — sticky info panel */
     .pdp-info {
       position: sticky;
-      top: 52px;                   /* below the nav */
+      top: 52px;
       height: calc(100vh - 52px);
       overflow-y: auto;
       padding: 48px 44px 48px 52px;
@@ -49,6 +56,7 @@
       flex-direction: column;
       gap: 0;
       scrollbar-width: none;
+      background: rgba(255,255,255,0.92);
     }
     .pdp-info::-webkit-scrollbar { display: none; }
 
@@ -75,6 +83,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 6px;
+      color: #0000ff;
     }
     .pdp-material {
       font-family: var(--font-mono);
@@ -89,6 +98,7 @@
       font-size: 13px;
       letter-spacing: 0.06em;
       margin-bottom: 36px;
+      color: #0000ff;
     }
     .pdp-size-label {
       display: block;
