@@ -126,104 +126,6 @@
     .site-ticker .ticker-track a  { color: #fff; }
     .site-ticker .ticker-sep      { color: rgba(255, 255, 255, 0.45); }
 
-    /* ── Employee login modal ───────────────────────────────────────── */
-    .login-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .login-overlay.open {
-      display: flex;
-    }
-
-    .login-modal {
-      background: #fff;
-      width: 340px;
-      padding: 36px 36px 32px;
-      position: relative;
-    }
-
-    .login-modal-close {
-      position: absolute;
-      top: 14px;
-      right: 16px;
-      background: none;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-      color: rgba(0,0,0,0.4);
-      line-height: 1;
-    }
-
-    .login-modal-close:hover { color: #000; }
-
-    .login-modal h2 {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.20em;
-      text-transform: uppercase;
-      color: #000;
-      margin-bottom: 6px;
-    }
-
-    .login-modal p.login-sub {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      color: rgba(0,0,0,0.45);
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    .login-input-row {
-      display: flex;
-      border: 1px solid rgba(0,0,0,0.22);
-    }
-
-    .login-input-row input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 11px 14px;
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      color: #000;
-      min-width: 0;
-    }
-
-    .login-input-row input::placeholder {
-      color: rgba(0,0,0,0.28);
-    }
-
-    .login-submit-btn {
-      background: #0000ff;
-      border: none;
-      color: #fff;
-      padding: 0 16px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .login-submit-btn:hover { background: #0000cc; }
-
-    .login-error {
-      font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #ff4444;
-      margin-top: 12px;
-    }
   </style>
 </head>
 <body>
@@ -247,7 +149,7 @@
 
       <div class="nav-right">
         <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
-        <button class="nav-icon-btn" id="accountBtn" title="Employee login">
+        <button class="nav-icon-btn" title="Account">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="10" cy="7" r="3.5"/>
             <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
@@ -286,28 +188,6 @@
   <!-- TICKER — fixed bottom, blue -->
   <div class="site-ticker">
     <div class="ticker-track" id="tickerTrack"></div>
-  </div>
-
-  <!-- EMPLOYEE LOGIN MODAL -->
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-modal">
-      <button class="login-modal-close" id="loginClose">✕</button>
-      <h2>Employee Access</h2>
-      <p class="login-sub">Sign in with your Polymarket email</p>
-      <form id="loginForm">
-        <div class="login-input-row">
-          <input
-            type="email"
-            id="loginEmail"
-            placeholder="you@polymarket.com"
-            autocomplete="email"
-            required
-          />
-          <button type="submit" class="login-submit-btn">→</button>
-        </div>
-      </form>
-      <p class="login-error" id="loginError" style="display:none;">Email not authorised.</p>
-    </div>
   </div>
 
   <script>
@@ -385,7 +265,7 @@
     requestAnimationFrame(draw);
 
     // ── Password gate ────────────────────────────────────────────────────
-    const CORRECT_PASSWORD = 'chaostheory';
+    const CORRECT_PASSWORD = 'shabang';
 
     const form    = document.getElementById('passwordForm');
     const input   = document.getElementById('passwordInput');
@@ -411,47 +291,6 @@
 
     input.addEventListener('input', () => { errorEl.style.display = 'none'; });
 
-    // ── Employee email login ──────────────────────────────────────────────
-    // Add approved individual emails to APPROVED_EMAILS if needed
-    const APPROVED_DOMAINS = ['polymarket.com'];
-    const APPROVED_EMAILS  = [];
-
-    const accountBtn  = document.getElementById('accountBtn');
-    const loginOverlay = document.getElementById('loginOverlay');
-    const loginClose  = document.getElementById('loginClose');
-    const loginForm   = document.getElementById('loginForm');
-    const loginEmail  = document.getElementById('loginEmail');
-    const loginError  = document.getElementById('loginError');
-
-    accountBtn.addEventListener('click', () => {
-      loginOverlay.classList.add('open');
-      setTimeout(() => loginEmail.focus(), 50);
-    });
-
-    loginClose.addEventListener('click', () => {
-      loginOverlay.classList.remove('open');
-      loginError.style.display = 'none';
-      loginEmail.value = '';
-    });
-
-    loginOverlay.addEventListener('click', (e) => {
-      if (e.target === loginOverlay) loginClose.click();
-    });
-
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email  = loginEmail.value.toLowerCase().trim();
-      const domain = email.split('@')[1] || '';
-      if (APPROVED_DOMAINS.includes(domain) || APPROVED_EMAILS.includes(email)) {
-        sessionStorage.setItem('pm_auth', 'true');
-        window.location.replace('shop.html');
-      } else {
-        loginError.style.display = 'block';
-        loginEmail.select();
-      }
-    });
-
-    loginEmail.addEventListener('input', () => { loginError.style.display = 'none'; });
   </script>
   <script src="js/ticker.js"></script>
 </body>
