@@ -16,13 +16,19 @@
       overflow: hidden;
     }
 
-    /* TV static canvas fills entire viewport */
+    /* TV static canvas fills entire viewport behind everything */
     #staticCanvas {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       z-index: 0;
+    }
+
+    /* Header sits above canvas */
+    .site-header {
+      position: relative;
+      z-index: 10;
     }
 
     /* Password form centered over static */
@@ -39,13 +45,11 @@
     .password-form-wrap {
       pointer-events: all;
       text-align: center;
-      width: 480px;
       padding: 44px 48px 40px;
       background: rgba(0, 0, 0, 0.52);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      overflow: hidden;
     }
 
     .password-form-wrap h1 {
@@ -107,7 +111,7 @@
       margin-top: 14px;
     }
 
-    /* Pin the ticker to the bottom on the password page */
+    /* Bottom ticker — blue bar */
     .site-ticker {
       position: fixed;
       bottom: 0;
@@ -119,12 +123,106 @@
       border-bottom: none;
     }
 
-    .site-ticker .ticker-track a {
-      color: #fff;
+    .site-ticker .ticker-track a  { color: #fff; }
+    .site-ticker .ticker-sep      { color: rgba(255, 255, 255, 0.45); }
+
+    /* ── Employee login modal ───────────────────────────────────────── */
+    .login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
     }
 
-    .site-ticker .ticker-sep {
-      color: rgba(255, 255, 255, 0.45);
+    .login-overlay.open {
+      display: flex;
+    }
+
+    .login-modal {
+      background: #fff;
+      width: 340px;
+      padding: 36px 36px 32px;
+      position: relative;
+    }
+
+    .login-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: rgba(0,0,0,0.4);
+      line-height: 1;
+    }
+
+    .login-modal-close:hover { color: #000; }
+
+    .login-modal h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: #000;
+      margin-bottom: 6px;
+    }
+
+    .login-modal p.login-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: rgba(0,0,0,0.45);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .login-input-row {
+      display: flex;
+      border: 1px solid rgba(0,0,0,0.22);
+    }
+
+    .login-input-row input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 11px 14px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      color: #000;
+      min-width: 0;
+    }
+
+    .login-input-row input::placeholder {
+      color: rgba(0,0,0,0.28);
+    }
+
+    .login-submit-btn {
+      background: #0000ff;
+      border: none;
+      color: #fff;
+      padding: 0 16px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .login-submit-btn:hover { background: #0000cc; }
+
+    .login-error {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ff4444;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -132,6 +230,38 @@
 
   <!-- TV STATIC CANVAS -->
   <canvas id="staticCanvas"></canvas>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M375.84 389.422C375.84 403.572 375.84 410.647 371.212 414.154C366.585 417.662 359.773 415.75 346.15 411.927L127.22 350.493C119.012 348.19 114.907 347.038 112.534 343.907C110.161 340.776 110.161 336.513 110.161 327.988V184.012C110.161 175.487 110.161 171.224 112.534 168.093C114.907 164.962 119.012 163.81 127.22 161.507L346.15 100.072C359.773 96.2495 366.585 94.338 371.212 97.8455C375.84 101.353 375.84 108.428 375.84 122.578V389.422ZM164.761 330.463L346.035 381.337V279.595L164.761 330.463ZM139.963 306.862L321.201 256L139.963 205.138V306.862ZM164.759 181.537L346.035 232.406V130.663L164.759 181.537Z" fill="black"/>
+        </svg>
+        Polymarket
+      </a>
+
+      <div class="nav-center">
+        <a href="shop.html">SHOP</a>
+      </div>
+
+      <div class="nav-right">
+        <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+        <button class="nav-icon-btn" id="accountBtn" title="Employee login">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+        <button class="nav-icon-btn" title="Search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8.5" cy="8.5" r="5"/>
+            <path d="M15 15l-3-3"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </header>
 
   <!-- PASSWORD GATE -->
   <main class="password-gate">
@@ -153,9 +283,31 @@
     </div>
   </main>
 
-  <!-- TICKER — fixed bottom, original design -->
+  <!-- TICKER — fixed bottom, blue -->
   <div class="site-ticker">
     <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- EMPLOYEE LOGIN MODAL -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-modal">
+      <button class="login-modal-close" id="loginClose">✕</button>
+      <h2>Employee Access</h2>
+      <p class="login-sub">Sign in with your Polymarket email</p>
+      <form id="loginForm">
+        <div class="login-input-row">
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="you@polymarket.com"
+            autocomplete="email"
+            required
+          />
+          <button type="submit" class="login-submit-btn">→</button>
+        </div>
+      </form>
+      <p class="login-error" id="loginError" style="display:none;">Email not authorised.</p>
+    </div>
   </div>
 
   <script>
@@ -180,58 +332,24 @@
 
     function spawnGlitch() {
       const roll = Math.random();
-
       if (roll < 0.30) {
-        glitches.push({
-          kind: 'band',
-          y:    (Math.random() * 0.85 * H) | 0,
-          h:    (1 + Math.random() * 8)    | 0,
-          v:    170 + (Math.random() * 85) | 0,
-          life: 1, decay: 0.10 + Math.random() * 0.18
-        });
+        glitches.push({ kind:'band', y:(Math.random()*0.85*H)|0, h:(1+Math.random()*8)|0, v:170+(Math.random()*85)|0, life:1, decay:0.10+Math.random()*0.18 });
       } else if (roll < 0.55) {
-        glitches.push({
-          kind: 'dropout',
-          y:    (Math.random() * 0.85 * H) | 0,
-          h:    (3 + Math.random() * 22)   | 0,
-          life: 1, decay: 0.09 + Math.random() * 0.14
-        });
+        glitches.push({ kind:'dropout', y:(Math.random()*0.85*H)|0, h:(3+Math.random()*22)|0, life:1, decay:0.09+Math.random()*0.14 });
       } else if (roll < 0.75) {
-        const count = 1 + (Math.random() * 3 | 0);
-        glitches.push({
-          kind:  'tear',
-          lines: Array.from({ length: count }, () => ({
-            y:     (Math.random() * H)            | 0,
-            h:     (1 + Math.random() * 6)        | 0,
-            shift: (Math.random() > 0.5 ? 1 : -1) * ((10 + Math.random() * 35) | 0)
-          })),
-          life: 1, decay: 0.20 + Math.random() * 0.30
-        });
+        glitches.push({ kind:'tear', lines:Array.from({length:1+(Math.random()*3|0)},()=>({ y:(Math.random()*H)|0, h:(1+Math.random()*6)|0, shift:(Math.random()>0.5?1:-1)*((10+Math.random()*35)|0) })), life:1, decay:0.20+Math.random()*0.30 });
       } else if (roll < 0.90) {
-        glitches.push({
-          kind: 'flicker',
-          boost: 20 + (Math.random() * 30) | 0,
-          life: 1, decay: 0.25 + Math.random() * 0.40
-        });
+        glitches.push({ kind:'flicker', boost:20+(Math.random()*30)|0, life:1, decay:0.25+Math.random()*0.40 });
       } else {
-        glitches.push({
-          kind:    'ghost',
-          yShift:  ((Math.random() > 0.5 ? 1 : -1) * (4 + Math.random() * 14)) | 0,
-          opacity: 0.08 + Math.random() * 0.14,
-          life: 1, decay: 0.06 + Math.random() * 0.10
-        });
+        glitches.push({ kind:'ghost', yShift:((Math.random()>0.5?1:-1)*(4+Math.random()*14))|0, opacity:0.08+Math.random()*0.14, life:1, decay:0.06+Math.random()*0.10 });
       }
     }
 
-    function scheduleGlitch() {
-      setTimeout(() => { spawnGlitch(); scheduleGlitch(); },
-        2000 + Math.random() * 5000);
-    }
+    function scheduleGlitch() { setTimeout(()=>{ spawnGlitch(); scheduleGlitch(); }, 2000+Math.random()*5000); }
     setTimeout(scheduleGlitch, 800);
 
-    let lastTs  = 0;
-    const FRAME = 1000 / 24;
-
+    let lastTs = 0;
+    const FRAME = 1000/24;
     const ghost = document.createElement('canvas');
     const gCtx  = ghost.getContext('2d');
 
@@ -240,12 +358,11 @@
       if (ts - lastTs < FRAME) return;
       lastTs = ts;
 
-      const flickerG = glitches.find(g => g.kind === 'flicker');
+      const flickerG = glitches.find(g=>g.kind==='flicker');
       const boost    = flickerG ? flickerG.boost * flickerG.life : 0;
 
       const img  = ctx.createImageData(W, H);
       const data = img.data;
-
       for (let i = 0; i < data.length; i += 4) {
         const r = Math.random();
         let v;
@@ -258,41 +375,12 @@
       }
       ctx.putImageData(img, 0, 0);
 
-      glitches.filter(g => g.kind === 'tear').forEach(g => {
-        g.lines.forEach(ln => {
-          const strip = ctx.getImageData(0, ln.y, W, ln.h);
-          ctx.putImageData(strip, ln.shift, ln.y);
-          ctx.fillStyle = 'rgba(0,0,0,0.9)';
-          if (ln.shift > 0) ctx.fillRect(0, ln.y, ln.shift, ln.h);
-          else              ctx.fillRect(W + ln.shift, ln.y, -ln.shift, ln.h);
-        });
-      });
+      glitches.filter(g=>g.kind==='tear').forEach(g=>{ g.lines.forEach(ln=>{ const s=ctx.getImageData(0,ln.y,W,ln.h); ctx.putImageData(s,ln.shift,ln.y); ctx.fillStyle='rgba(0,0,0,0.9)'; if(ln.shift>0) ctx.fillRect(0,ln.y,ln.shift,ln.h); else ctx.fillRect(W+ln.shift,ln.y,-ln.shift,ln.h); }); });
+      glitches.filter(g=>g.kind==='band').forEach(g=>{ const v=g.v; ctx.fillStyle=`rgba(${v},${v},${v},${0.82*g.life})`; ctx.fillRect(0,g.y,W,g.h); });
+      glitches.filter(g=>g.kind==='dropout').forEach(g=>{ ctx.fillStyle=`rgba(0,0,0,${0.88*g.life})`; ctx.fillRect(0,g.y,W,g.h); });
+      glitches.filter(g=>g.kind==='ghost').forEach(g=>{ ghost.width=W; ghost.height=H; gCtx.putImageData(img,0,0); ctx.save(); ctx.globalAlpha=g.opacity*g.life; ctx.drawImage(ghost,0,g.yShift); ctx.restore(); });
 
-      glitches.filter(g => g.kind === 'band').forEach(g => {
-        const v = g.v;
-        ctx.fillStyle = `rgba(${v},${v},${v},${0.82 * g.life})`;
-        ctx.fillRect(0, g.y, W, g.h);
-      });
-
-      glitches.filter(g => g.kind === 'dropout').forEach(g => {
-        ctx.fillStyle = `rgba(0,0,0,${0.88 * g.life})`;
-        ctx.fillRect(0, g.y, W, g.h);
-      });
-
-      glitches.filter(g => g.kind === 'ghost').forEach(g => {
-        ghost.width  = W;
-        ghost.height = H;
-        gCtx.putImageData(img, 0, 0);
-        ctx.save();
-        ctx.globalAlpha = g.opacity * g.life;
-        ctx.drawImage(ghost, 0, g.yShift);
-        ctx.restore();
-      });
-
-      for (let i = glitches.length - 1; i >= 0; i--) {
-        glitches[i].life -= glitches[i].decay;
-        if (glitches[i].life <= 0) glitches.splice(i, 1);
-      }
+      for (let i = glitches.length-1; i>=0; i--) { glitches[i].life -= glitches[i].decay; if (glitches[i].life<=0) glitches.splice(i,1); }
     }
     requestAnimationFrame(draw);
 
@@ -317,13 +405,53 @@
         input.value = '';
         input.focus();
         input.closest('.password-input-row').style.borderColor = '#ff4444';
-        setTimeout(() => {
-          input.closest('.password-input-row').style.borderColor = 'rgba(255,255,255,0.35)';
-        }, 1200);
+        setTimeout(() => { input.closest('.password-input-row').style.borderColor = 'rgba(255,255,255,0.35)'; }, 1200);
       }
     });
 
     input.addEventListener('input', () => { errorEl.style.display = 'none'; });
+
+    // ── Employee email login ──────────────────────────────────────────────
+    // Add approved individual emails to APPROVED_EMAILS if needed
+    const APPROVED_DOMAINS = ['polymarket.com'];
+    const APPROVED_EMAILS  = [];
+
+    const accountBtn  = document.getElementById('accountBtn');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginClose  = document.getElementById('loginClose');
+    const loginForm   = document.getElementById('loginForm');
+    const loginEmail  = document.getElementById('loginEmail');
+    const loginError  = document.getElementById('loginError');
+
+    accountBtn.addEventListener('click', () => {
+      loginOverlay.classList.add('open');
+      setTimeout(() => loginEmail.focus(), 50);
+    });
+
+    loginClose.addEventListener('click', () => {
+      loginOverlay.classList.remove('open');
+      loginError.style.display = 'none';
+      loginEmail.value = '';
+    });
+
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) loginClose.click();
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email  = loginEmail.value.toLowerCase().trim();
+      const domain = email.split('@')[1] || '';
+      if (APPROVED_DOMAINS.includes(domain) || APPROVED_EMAILS.includes(email)) {
+        sessionStorage.setItem('pm_auth', 'true');
+        window.location.replace('shop.html');
+      } else {
+        loginError.style.display = 'block';
+        loginEmail.select();
+      }
+    });
+
+    loginEmail.addEventListener('input', () => { loginError.style.display = 'none'; });
   </script>
   <script src="js/ticker.js"></script>
 </body>
