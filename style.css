@@ -27,6 +27,61 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 img { display: block; max-width: 100%; }
 
+/* ===== TICKER BANNER ===== */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.site-ticker {
+  width: 100%;
+  overflow: hidden;
+  background: #e8e8e8;
+  border-bottom: 1px solid #1a1a1a;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 101; /* sits above sticky header */
+}
+
+.ticker-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll 90s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-track a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(26, 26, 26, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  padding: 0 24px;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.ticker-track a:hover {
+  color: #1a1a1a;
+}
+
+.ticker-sep {
+  color: rgba(26, 26, 26, 0.2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
 /* ===== HEADER / NAV ===== */
 .site-header {
   position: sticky;
