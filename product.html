@@ -150,7 +150,7 @@
     }
     .inv-svg {
       width: 100%;
-      height: 14px;
+      height: 24px;
       display: block;
       overflow: visible;
     }
@@ -685,7 +685,7 @@
         <button class="pdp-add-btn" id="addBtn" onclick="handleAdd()">Add to Bag</button>
         <div class="inv-wrap" id="invWrap">
           <p class="inv-subtitle">Inventory Tracker</p>
-          <svg class="inv-svg" id="invSvg" viewBox="0 0 300 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="inv-svg" id="invSvg" viewBox="0 0 300 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
           <p class="inv-label" id="invLabel"></p>
         </div>
         ${sizeChart}
@@ -818,47 +818,66 @@
       const btn   = document.getElementById('addBtn');
       if (!svg) return;
 
-      const color = getColor();  // null=no variants; ''=required unset; string=chosen
-      const size  = getSize();   // ''=required unset; string=chosen
+      const color = getColor();
+      const size  = getSize();
 
-      const needsColor = product.colorVariants && product.colorVariants.length > 0;
-      const colorReady = !needsColor || (color !== '' && color !== null);
-      const sizeReady  = product.sizeType === 'one-size' || size !== '';
+      const needsColor     = product.colorVariants && product.colorVariants.length > 0;
+      const colorReady     = !needsColor || (color !== '' && color !== null);
+      const sizeReady      = product.sizeType === 'one-size' || size !== '';
+      const selectionMade  = colorReady && sizeReady;
 
-      // Bar stays blank until a full selection is made
-      if (!colorReady || !sizeReady) {
-        svg.innerHTML = '';
-        if (label) label.textContent = '';
-        if (btn) { btn.disabled = false; btn.textContent = 'Add to Bag'; }
-        return;
-      }
+      const remaining = selectionMade ? getStockFor(stockKey(color, size)) : 0;
+      const fillPct   = remaining / INV_MAX; // 0..1
 
-      const key       = stockKey(color, size);
-      const remaining = getStockFor(key);
-
-      // Architectural scale blocks
-      const W = 300, H = 14;
-      const gap  = 2;
-      const segW = (W - gap * (INV_MAX - 1)) / INV_MAX;
+      // ── Halftone dot grid ─────────────────────────────────────
+      const COLS   = 48, ROWS = 3;
+      const STEP_X = 300 / COLS;   // 6.25
+      const STEP_Y = 8;
+      const R_FULL = 2.3;
+      const R_GHOST = 0.85;
+      const fillCols = fillPct * COLS;
 
       let d = '';
-      for (let i = 0; i < INV_MAX; i++) {
-        const x    = i * (segW + gap);
-        const fill = i < remaining ? '#e8e8e8' : '#ffffff';
-        d += '<rect x="' + x.toFixed(2) + '" y="0" width="' + segW.toFixed(2) + '" height="' + H + '" fill="' + fill + '" stroke="#000080" stroke-width="0.75"/>';
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const cx   = col * STEP_X + STEP_X / 2;
+          const cy   = row * STEP_Y + STEP_Y / 2;
+          const dist = fillCols - col; // >1 filled, 0-1 transition, <0 empty
+
+          let r, fill;
+          if (dist >= 1) {
+            r = R_FULL;  fill = '#000080';
+          } else if (dist > 0) {
+            // soft halftone edge — dot shrinks as it approaches the boundary
+            r = R_GHOST + dist * (R_FULL - R_GHOST);
+            fill = '#000080';
+          } else {
+            r = R_GHOST; fill = '#d8d8d8';
+          }
+
+          d += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(2) + '" fill="' + fill + '"/>';
+        }
       }
 
       svg.innerHTML = d;
 
       if (label) {
-        const pct = Math.round((remaining / INV_MAX) * 100);
-        label.textContent = remaining + ' / ' + INV_MAX + ' units  ·  ' + pct + '% remaining';
+        if (selectionMade) {
+          const pct = Math.round(fillPct * 100);
+          label.textContent = remaining + ' / ' + INV_MAX + ' units  ·  ' + pct + '% remaining';
+        } else {
+          label.textContent = '';
+        }
       }
 
       if (btn) {
-        const outOfStock = remaining <= 0;
-        btn.disabled    = outOfStock;
-        btn.textContent = outOfStock ? 'Out of Stock' : 'Add to Bag';
+        if (selectionMade) {
+          const outOfStock = remaining <= 0;
+          btn.disabled    = outOfStock;
+          btn.textContent = outOfStock ? 'Out of Stock' : 'Add to Bag';
+        } else {
+          btn.disabled = false; btn.textContent = 'Add to Bag';
+        }
       }
     }
 
