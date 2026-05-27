@@ -560,7 +560,21 @@
     </div>
     <div class="cart-footer" id="cartFooter" style="display:none;">
       <div class="cart-subtotal"><span>SUBTOTAL</span><span id="cartSubtotal">$0</span></div>
-      <button class="checkout-btn" onclick="proceedToCheckout()">CHECKOUT</button>
+      <!-- Physical button row -->
+      <div class="cart-btn-row" id="cartBtnRow">
+        <button class="phy-btn phy-btn-green" onclick="showCartForm('client')">
+          <div class="phy-btn-keycap">
+            <span class="phy-btn-label">For Client</span>
+          </div>
+        </button>
+        <button class="phy-btn phy-btn-red" onclick="showCartForm('employee')">
+          <div class="phy-btn-keycap">
+            <span class="phy-btn-label">For Employee</span>
+          </div>
+        </button>
+      </div>
+      <!-- Inline intake form -->
+      <div id="cartIntakePanel" style="display:none;"></div>
     </div>
   </aside>
 
@@ -780,7 +794,7 @@
         image: product.images && product.images[0] ? product.images[0] : null,
         shopifyVariantId: product.shopifyVariants[size] || null,
       });
-      proceedToCheckout();
+      openCart();
     }
 
     function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }

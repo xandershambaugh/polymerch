@@ -110,18 +110,59 @@ function closeCart() {
   document.getElementById('cartOverlay')?.classList.remove('open');
 }
 
-/**
- * Shopify checkout integration.
- * Replace this with your Storefront API cart→checkout flow.
- * See: https://shopify.dev/docs/api/storefront
- *
- * Minimal example (after Shopify setup):
- *   const { checkoutUrl } = await shopifyCheckoutCreate(lineItems);
- *   window.location.href = checkoutUrl;
- */
-function proceedToCheckout() {
-  const cart = getCart();
-  if (cart.length === 0) return;
+/* ── Cart intake form ───────────────────────────────────────────── */
+
+function showCartForm(type) {
+  const btnRow = document.getElementById('cartBtnRow');
+  const panel  = document.getElementById('cartIntakePanel');
+  if (!btnRow || !panel) return;
+  btnRow.style.display = 'none';
+
+  const clientFields = `
+    <div class="ci-field"><label>Employee Name</label><input type="text" name="employeeName" placeholder="Full name" required></div>
+    <div class="ci-field"><label>Employee Department</label><input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required></div>
+    <div class="ci-field"><label>VIP Client Name</label><input type="text" name="clientName" placeholder="e.g. Logan Paul" required></div>
+    <div class="ci-field"><label>VIP Client Email</label><input type="email" name="clientEmail" placeholder="client@email.com" required></div>
+    <div class="ci-field"><label>VIP Client Mailing Address</label><input type="text" name="clientAddress" placeholder="Street, City, State, ZIP" required></div>
+  `;
+
+  const employeeFields = `
+    <div class="ci-field"><label>Employee Name</label><input type="text" name="employeeName" placeholder="Full name" required></div>
+    <div class="ci-field"><label>Employee Department</label><input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required></div>
+    <div class="ci-field"><label>Employee Email</label><input type="email" name="employeeEmail" placeholder="you@polymarket.com" required></div>
+    <div class="ci-field"><label>Employee Mailing Address</label><input type="text" name="employeeAddress" placeholder="Street, City, State, ZIP" required></div>
+    <div class="ci-field"><label>Phone Number</label><input type="tel" name="phone" placeholder="+1 (000) 000-0000" required></div>
+  `;
+
+  panel.innerHTML = `
+    <form id="cartIntakeForm" onsubmit="submitCartIntake(event, '${type}')">
+      <button type="button" class="ci-back" onclick="hideCartForm()">← Back</button>
+      ${type === 'client' ? clientFields : employeeFields}
+      <button type="submit" class="ci-submit">Place Order →</button>
+      <p class="ci-error" id="cartIntakeError" style="display:none;">Please fill in all fields.</p>
+    </form>
+  `;
+  panel.style.display = 'block';
+}
+
+function hideCartForm() {
+  const btnRow = document.getElementById('cartBtnRow');
+  const panel  = document.getElementById('cartIntakePanel');
+  if (btnRow) btnRow.style.display = 'flex';
+  if (panel)  { panel.style.display = 'none'; panel.innerHTML = ''; }
+}
+
+function submitCartIntake(e, type) {
+  e.preventDefault();
+  const form = e.target;
+  const data = {};
+  new FormData(form).forEach((v, k) => { data[k] = v.trim(); });
+  if (Object.values(data).some(v => !v)) {
+    const err = document.getElementById('cartIntakeError');
+    if (err) err.style.display = 'block';
+    return;
+  }
+  sessionStorage.setItem('pm_intake', JSON.stringify({ type, ...data }));
   window.location.href = 'checkout.html';
 }
 

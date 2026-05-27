@@ -260,14 +260,14 @@
     const errorEl = document.getElementById('passwordError');
 
     if (sessionStorage.getItem('pm_auth') === 'true') {
-      window.location.replace('intake.html');
+      window.location.replace('shop.html');
     }
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       if (input.value === CORRECT_PASSWORD) {
         sessionStorage.setItem('pm_auth', 'true');
-        window.location.replace('intake.html');
+        window.location.replace('shop.html');
       } else {
         errorEl.style.display = 'block';
         input.value = '';
