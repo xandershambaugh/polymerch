@@ -107,17 +107,43 @@ img { display: block; max-width: 100%; }
   align-items: center;
 }
 
-.nav-shop-link {
+/* ── Bordered pill buttons: SHOP + CART ──────────────────── */
+.nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid #000080;
+  background: #fff;
+  color: #000080;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--black);
-  opacity: 0.65;
-  transition: opacity 0.15s;
+  cursor: pointer;
+  border-radius: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+  transition: background 0.15s;
 }
-.nav-shop-link:hover { opacity: 1; }
+.nav-pill-btn:hover { background: #efefef; }
+
+/* Badge inside text CART button */
+.nav-pill-btn .cart-badge {
+  position: static;
+  background: #000080;
+  border-radius: 8px;
+  font-size: 8px;
+  min-width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  vertical-align: middle;
+}
 
 /* ── Center slot: POLYMARKET wordmark ────────────────────── */
 .nav-wordmark {
@@ -183,8 +209,8 @@ img { display: block; max-width: 100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 52px;
+  width: 36px;
+  height: 36px;
   transition: opacity 0.15s;
   position: relative;
   opacity: 0.75;
