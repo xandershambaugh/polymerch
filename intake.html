@@ -44,42 +44,69 @@
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      overflow: hidden;
     }
 
     /* ── Tab toggle row ────────────────────────────────────────── */
     .tab-row {
       display: flex;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      gap: 14px;
+      padding: 28px 44px 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 16px 0;
+      padding: 15px 0;
       font-family: 'Space Mono', monospace;
       font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.20em;
+      font-weight: 700;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      background: transparent;
+      color: rgba(255, 255, 255, 0.92);
       border: none;
-      color: rgba(255, 255, 255, 0.40);
+      border-radius: 3px;
       cursor: pointer;
-      transition: color 0.15s, background 0.15s;
+      transition: opacity 0.15s, transform 0.12s, box-shadow 0.12s;
     }
 
-    .tab-btn:first-child {
-      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    /* Green — For Client */
+    #tabClient {
+      background: linear-gradient(to bottom, #65b865 0%, #3e913e 55%, #2f752f 100%);
     }
 
-    .tab-btn.active {
-      background: #0000ff;
-      color: #fff;
+    /* Red — For Employee */
+    #tabEmployee {
+      background: linear-gradient(to bottom, #c34848 0%, #982222 55%, #7d1717 100%);
     }
 
-    .tab-btn:not(.active):hover {
-      color: rgba(255, 255, 255, 0.75);
-      background: rgba(255, 255, 255, 0.05);
+    /* Inactive: dimmed, pressed in */
+    .tab-btn:not(.active) {
+      opacity: 0.55;
+      transform: translateY(1px);
+      box-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.55),
+        inset 0 2px 6px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Active: raised and lit */
+    #tabClient.active {
+      opacity: 1;
+      transform: translateY(0);
+      box-shadow:
+        0 5px 0 #1c521c,
+        0 8px 18px rgba(40, 130, 40, 0.50),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.20);
+    }
+
+    #tabEmployee.active {
+      opacity: 1;
+      transform: translateY(0);
+      box-shadow:
+        0 5px 0 #520e0e,
+        0 8px 18px rgba(150, 25, 25, 0.50),
+        inset 0 1px 2px rgba(255, 255, 255, 0.20),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.28);
     }
 
     /* ── Form panels ───────────────────────────────────────────── */
