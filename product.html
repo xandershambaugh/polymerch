@@ -93,10 +93,11 @@
     .pdp-size-label {
       display: block;
       font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.14em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
-      color: #999;
+      color: #000080;
       margin-bottom: 10px;
     }
     .pdp-size-buttons {
@@ -122,20 +123,30 @@
     .pdp-sg-link {
       display: inline-block;
       font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.1em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
       text-decoration: underline;
       text-underline-offset: 3px;
       cursor: pointer;
       margin-bottom: 36px;
-      color: var(--black);
-      opacity: 0.5;
+      color: #000080;
     }
-    .pdp-sg-link:hover { opacity: 1; }
+    .pdp-sg-link:hover { opacity: 0.7; }
     /* ── Retro inventory bar ── */
     .inv-wrap {
-      margin-bottom: 18px;
+      margin-top: 18px;
+      margin-bottom: 0;
+    }
+    .inv-subtitle {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #000080;
+      margin-bottom: 10px;
     }
     .inv-svg {
       width: 100%;
@@ -230,10 +241,11 @@
     .pdp-color-label {
       display: block;
       font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.14em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
-      color: #999;
+      color: #000080;
       margin-bottom: 10px;
     }
     .pdp-color-selected-name {
@@ -672,11 +684,12 @@
         <p class="pdp-price">$${product.price}</p>
         ${colorSection}
         ${sizeSection}
+        <button class="pdp-add-btn" id="addBtn" onclick="handleAdd()">Add to Bag</button>
         <div class="inv-wrap" id="invWrap">
+          <p class="inv-subtitle">Inventory Tracker</p>
           <svg class="inv-svg" id="invSvg" viewBox="0 0 300 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
           <p class="inv-label" id="invLabel"></p>
         </div>
-        <button class="pdp-add-btn" id="addBtn" onclick="handleAdd()">Add to Bag</button>
         ${sizeChart}
       `;
 
@@ -801,21 +814,21 @@
       let d = '';
 
       // Baseline
-      d += `<line x1="${margin}" y1="${baseY}" x2="${W - margin}" y2="${baseY}" stroke="#000080" stroke-width="2"/>`;
+      d += `<line x1="${margin}" y1="${baseY}" x2="${W - margin}" y2="${baseY}" stroke="#000080" stroke-width="1"/>`;
 
       // End caps
-      d += `<line x1="${margin}" y1="${baseY - 8}" x2="${margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="2"/>`;
-      d += `<line x1="${W - margin}" y1="${baseY - 8}" x2="${W - margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="2"/>`;
+      d += `<line x1="${margin}" y1="${baseY - 8}" x2="${margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="1"/>`;
+      d += `<line x1="${W - margin}" y1="${baseY - 8}" x2="${W - margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="1"/>`;
 
       // Tick marks
       for (let i = 1; i <= INV_MAX; i++) {
         const x = margin + step * i;
         if (i <= remaining) {
           // Active — full tick dropping below baseline
-          d += `<line x1="${x}" y1="${baseY - 6}" x2="${x}" y2="${baseY + tickH - 6}" stroke="#000080" stroke-width="1.5"/>`;
+          d += `<line x1="${x}" y1="${baseY - 6}" x2="${x}" y2="${baseY + tickH - 6}" stroke="#000080" stroke-width="0.5"/>`;
         } else {
           // Depleted — ghost stub, barely visible
-          d += `<line x1="${x}" y1="${baseY - ghostH}" x2="${x}" y2="${baseY}" stroke="#000080" stroke-width="0.8" stroke-dasharray="1 1.5" opacity="0.18"/>`;
+          d += `<line x1="${x}" y1="${baseY - ghostH}" x2="${x}" y2="${baseY}" stroke="#000080" stroke-width="0.5" stroke-dasharray="1 1.5" opacity="0.18"/>`;
         }
       }
 
