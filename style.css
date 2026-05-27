@@ -38,8 +38,8 @@ img { display: block; max-width: 100%; }
 .site-ticker {
   width: 100%;
   overflow: hidden;
-  background: #0d0d0d;
-  border-bottom: 1px solid #000;
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
   height: 35px;
   display: flex;
   align-items: center;
