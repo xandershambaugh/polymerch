@@ -148,6 +148,20 @@ img { display: block; max-width: 100%; }
 }
 .nav-pill-btn:hover { background: #efefef; }
 
+/* SHOP link — same font/color as pill but no border or background */
+.nav-shop-link {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000080;
+  text-decoration: none;
+  padding: 4px 10px;
+  transition: opacity 0.15s;
+}
+.nav-shop-link:hover { opacity: 0.6; }
+
 /* Badge inside text CART button */
 .nav-pill-btn .cart-badge {
   position: static;
