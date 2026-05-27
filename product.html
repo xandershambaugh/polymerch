@@ -133,6 +133,27 @@
       opacity: 0.5;
     }
     .pdp-sg-link:hover { opacity: 1; }
+    /* ── Retro inventory bar ── */
+    .inv-wrap {
+      margin-bottom: 18px;
+    }
+    .inv-svg {
+      width: 100%;
+      height: 22px;
+      display: block;
+      overflow: visible;
+    }
+    .inv-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #000080;
+      text-align: center;
+      margin-top: 6px;
+      opacity: 0.75;
+    }
+
     .pdp-add-btn {
       width: 100%;
       background: white;
@@ -148,6 +169,12 @@
       transition: background 0.15s, color 0.15s;
     }
     .pdp-add-btn:hover { background: #000080; color: white; }
+    .pdp-add-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: white;
+      color: #000080;
+    }
 
     /* Request block */
     .pdp-subscribe {
@@ -645,7 +672,11 @@
         <p class="pdp-price">$${product.price}</p>
         ${colorSection}
         ${sizeSection}
-        <button class="pdp-add-btn" onclick="handleAdd()">Add to Bag</button>
+        <div class="inv-wrap" id="invWrap">
+          <svg class="inv-svg" id="invSvg" viewBox="0 0 300 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+          <p class="inv-label" id="invLabel"></p>
+        </div>
+        <button class="pdp-add-btn" id="addBtn" onclick="handleAdd()">Add to Bag</button>
         ${sizeChart}
       `;
 
@@ -742,8 +773,72 @@
       return ok;
     }
 
+    /* ── Inventory tracking ────────────────────────────────── */
+    const INV_MAX = 12;
+    const INV_KEY = `pm_stock_${product.id}`;
+
+    function getStock() {
+      const s = localStorage.getItem(INV_KEY);
+      return s !== null ? Math.max(0, parseInt(s, 10)) : INV_MAX;
+    }
+
+    function setStock(n) {
+      localStorage.setItem(INV_KEY, Math.max(0, n));
+    }
+
+    function renderInventoryBar() {
+      const remaining = getStock();
+      const svg   = document.getElementById('invSvg');
+      const label = document.getElementById('invLabel');
+      const btn   = document.getElementById('addBtn');
+      if (!svg) return;
+
+      const W = 300, baseY = 6, capH = 16, tickH = 14, ghostH = 5;
+      const margin = 6;
+      const inner  = W - margin * 2;
+      const step   = inner / (INV_MAX + 1);
+
+      let d = '';
+
+      // Baseline
+      d += `<line x1="${margin}" y1="${baseY}" x2="${W - margin}" y2="${baseY}" stroke="#000080" stroke-width="2"/>`;
+
+      // End caps
+      d += `<line x1="${margin}" y1="${baseY - 8}" x2="${margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="2"/>`;
+      d += `<line x1="${W - margin}" y1="${baseY - 8}" x2="${W - margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="2"/>`;
+
+      // Tick marks
+      for (let i = 1; i <= INV_MAX; i++) {
+        const x = margin + step * i;
+        if (i <= remaining) {
+          // Active — full tick dropping below baseline
+          d += `<line x1="${x}" y1="${baseY - 6}" x2="${x}" y2="${baseY + tickH - 6}" stroke="#000080" stroke-width="1.5"/>`;
+        } else {
+          // Depleted — ghost stub, barely visible
+          d += `<line x1="${x}" y1="${baseY - ghostH}" x2="${x}" y2="${baseY}" stroke="#000080" stroke-width="0.8" stroke-dasharray="1 1.5" opacity="0.18"/>`;
+        }
+      }
+
+      svg.innerHTML = d;
+
+      if (label) {
+        label.textContent = `← ${remaining} / ${INV_MAX} units →`;
+      }
+
+      if (btn) {
+        const outOfStock = remaining <= 0;
+        btn.disabled     = outOfStock;
+        btn.textContent  = outOfStock ? 'Out of Stock' : 'Add to Bag';
+      }
+    }
+
+    // Draw bar as soon as the template is in the DOM
+    setTimeout(renderInventoryBar, 0);
+
     function handleAdd() {
       if (!validate()) return;
+      const stock = getStock();
+      if (stock <= 0) return;
       const color = getColor();
       const size  = getSize();
       addToCart({
@@ -752,6 +847,8 @@
         image: product.images && product.images[0] ? product.images[0] : null,
         shopifyVariantId: product.shopifyVariants[size] || null,
       });
+      setStock(stock - 1);
+      renderInventoryBar();
     }
 
 function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }
