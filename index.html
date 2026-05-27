@@ -22,7 +22,9 @@
     }
 
     body {
-      background: #fff;
+      background-color: #fff;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
+      background-size: 24px 24px;
     }
 
     /* Header sits above canvas */
@@ -111,20 +113,6 @@
       margin-top: 14px;
     }
 
-    /* Bottom ticker — blue bar */
-    .site-ticker {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      background: #0000ff;
-      border-top: none;
-      border-bottom: none;
-    }
-
-    .site-ticker .ticker-track a  { color: #fff; }
-    .site-ticker .ticker-sep      { color: rgba(255, 255, 255, 0.45); }
 
   </style>
 </head>
@@ -184,11 +172,6 @@
       <p class="password-error" id="passwordError" style="display:none;">Incorrect password. Try again.</p>
     </div>
   </main>
-
-  <!-- TICKER — fixed bottom, blue -->
-  <div class="site-ticker">
-    <div class="ticker-track" id="tickerTrack"></div>
-  </div>
 
   <script>
     // ── TV Static + Glitches ─────────────────────────────────────────────
@@ -292,6 +275,5 @@
     input.addEventListener('input', () => { errorEl.style.display = 'none'; });
 
   </script>
-  <script src="js/ticker.js"></script>
 </body>
 </html>
