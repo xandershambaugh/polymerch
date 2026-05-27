@@ -90,6 +90,19 @@ img { display: block; max-width: 100%; }
   opacity: 0.8;
 }
 
+/* Password page — override ticker to plain navy (no green/red/orange) */
+.page-password .ticker-track a,
+.page-password .ticker-track a:has(.ticker-up),
+.page-password .ticker-track a:has(.ticker-down) {
+  color: rgba(0, 0, 128, 0.55);
+  text-shadow: none;
+}
+.page-password .ticker-up,
+.page-password .ticker-down {
+  color: rgba(0, 0, 128, 0.55);
+  text-shadow: none;
+}
+
 .ticker-sep {
   display: none;
 }
