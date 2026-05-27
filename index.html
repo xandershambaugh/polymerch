@@ -22,23 +22,30 @@
     }
 
     body {
-      background-color: #111;
+      background-color: #fff;
+    }
+
+    /* Background image at 20% opacity, sits below the dot grid */
+    .password-bg {
+      position: fixed;
+      inset: 0;
       background-image: url('assets/images/password-bg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    /* Dot overlay: white circles with difference blend — each dot
-       becomes the exact inverse of whatever pixel is beneath it   */
+    /* Dot grid on top of the image — original navy dots on white */
     .dot-overlay {
       position: fixed;
       inset: 0;
-      background-image: radial-gradient(circle, #ffffff 1.2px, transparent 1.2px);
+      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
       background-size: 24px 24px;
-      mix-blend-mode: difference;
       pointer-events: none;
-      z-index: 3;
+      z-index: 2;
     }
 
     /* Header sits above canvas */
@@ -133,7 +140,10 @@
   <!-- TV STATIC CANVAS (hidden) -->
   <canvas id="staticCanvas"></canvas>
 
-  <!-- DOT OVERLAY — difference-blend inverts each dot against the bg image -->
+  <!-- BACKGROUND IMAGE at 20% opacity -->
+  <div class="password-bg"></div>
+
+  <!-- DOT OVERLAY — original navy dot grid on top of the image -->
   <div class="dot-overlay"></div>
 
   <!-- TICKER -->
