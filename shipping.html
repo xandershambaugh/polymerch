@@ -198,10 +198,15 @@
         <span>SUBTOTAL</span>
         <span id="cartSubtotal">$0</span>
       </div>
+      <!-- Order-limit warning -->
+      <div class="cart-limit-warning" id="cartLimitWarning" style="display:none;">
+        You have reached the maximum order limit. Please remove an item to proceed.
+      </div>
       <button class="checkout-btn" onclick="proceedToCheckout()">CHECKOUT</button>
     </div>
   </aside>
 
+  <script src="js/shopify.js"></script>
   <script src="js/cart.js"></script>
   <script>
     if (sessionStorage.getItem('pm_auth') !== 'true') {

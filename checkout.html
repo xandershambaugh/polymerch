@@ -484,7 +484,7 @@
 
       if (cart.length === 0) {
         itemsEl.innerHTML = '<p style="font-family:\'Space Mono\',monospace;font-size:10px;color:rgba(0,0,0,0.4);letter-spacing:0.10em;">Your bag is empty.</p>';
-        totalEl.textContent = '$0';
+        totalEl.textContent = 'Complimentary';
         return;
       }
 
@@ -504,13 +504,13 @@
             <div class="checkout-item-name">${item.name}</div>
             ${item.color ? `<div class="checkout-item-meta">Color: ${item.color}</div>` : ''}
             <div class="checkout-item-meta">Size: ${item.size}${item.qty > 1 ? ` × ${item.qty}` : ''}</div>
-            <div class="checkout-item-price">$${lineTotal.toFixed(0)}</div>
+            <div class="checkout-item-price">Complimentary</div>
           </div>
         `;
         itemsEl.appendChild(div);
       });
 
-      totalEl.textContent = `$${total.toFixed(0)}`;
+      totalEl.textContent = 'Complimentary';
     }
 
     renderSummary();
@@ -556,10 +556,21 @@
       document.getElementById('checkoutFormCol').style.display = 'none';
       document.getElementById('checkoutConfirm').style.display = 'block';
 
+      // Fire Shopify draft order (non-blocking — confirmation already shown)
+      createShopifyDraftOrder({ type: sessionStorage.getItem('pm_intake')
+        ? JSON.parse(sessionStorage.getItem('pm_intake')).type : 'unknown', ...data }, cart)
+        .then(orderName => {
+          if (orderName) {
+            const refEl = document.getElementById('confirmRef');
+            if (refEl) refEl.textContent += ' · ' + orderName;
+          }
+        });
+
       // Clear cart
       sessionStorage.removeItem(CART_KEY);
     });
   </script>
+  <script src="js/shopify.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/ticker.js"></script>
   <script src="js/auth.js"></script>

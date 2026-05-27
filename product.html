@@ -574,6 +574,11 @@
     </div>
     <div class="cart-footer" id="cartFooter" style="display:none;">
       <div class="cart-subtotal"><span>SUBTOTAL</span><span id="cartSubtotal">$0</span></div>
+      <!-- Order-limit warning -->
+      <div class="cart-limit-warning" id="cartLimitWarning" style="display:none;">
+        You have reached the maximum order limit. Please remove an item to proceed.
+      </div>
+
       <!-- Physical button row -->
       <div class="cart-btn-row" id="cartBtnRow">
         <button class="phy-btn phy-btn-green" onclick="showCartForm('client')">
@@ -593,6 +598,7 @@
   </aside>
 
   <script src="js/products.js"></script>
+  <script src="js/shopify.js"></script>
   <script src="js/cart.js"></script>
   <script>
     if (sessionStorage.getItem('pm_auth') !== 'true') {
@@ -685,7 +691,7 @@
       document.getElementById('pdpInfo').innerHTML = `
         <h1 class="pdp-name">${product.name}</h1>
         <p class="pdp-material">${product.material}</p>
-        <p class="pdp-price">$${product.price}</p>
+        <p class="pdp-price">Complimentary</p>
         ${colorSection}
         ${sizeSection}
         <div class="inv-wrap" id="invWrap">
@@ -718,7 +724,7 @@
             ${rSrc
               ? `<img src="${rSrc}" alt="${p.name}">`
               : `<div class="related-card-placeholder">${p.name}</div>`}
-            <div class="related-card-overlay">${p.name} / $${p.price}</div>
+            <div class="related-card-overlay">${p.name}</div>
           </a>`;
       }).join('');
     }

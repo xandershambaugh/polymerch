@@ -1,11 +1,16 @@
 /**
  * Polymerch Cart
- * Manages a client-side cart stored in sessionStorage.
- * When Shopify is connected, replace proceedToCheckout()
- * with a Shopify Storefront API cart + checkout URL call.
+ * - Prices are tracked internally for the $1,000 order-value cap.
+ * - All price displays show "Complimentary" to the user.
+ * - On form submission, createShopifyDraftOrder() fires to create a
+ *   $0-charged draft order in Shopify. Configure SHOPIFY_* constants
+ *   in js/shopify.js before going live.
  */
 
-const CART_KEY = 'pm_cart';
+const CART_KEY    = 'pm_cart';
+const ORDER_LIMIT = 1000;   // internal cap — no single order may exceed this value
+
+// ── Cart state helpers ─────────────────────────────────────────────
 
 function getCart() {
   try { return JSON.parse(sessionStorage.getItem(CART_KEY)) || []; }
@@ -18,12 +23,36 @@ function saveCart(cart) {
   updateCartBadge();
 }
 
+/** Returns the internal dollar total of the current cart (never shown to user). */
+function cartTotal(cart) {
+  cart = cart || getCart();
+  return cart.reduce((sum, item) => {
+    const p = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+    return sum + p * (item.qty || 1);
+  }, 0);
+}
+
+// ── Add / remove ───────────────────────────────────────────────────
+
 function addToCart(item) {
-  // item = { id, name, price, size, color?, image }
-  const cart = getCart();
+  const cart  = getCart();
+  const price = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
   const existing = cart.find(c =>
     c.id === item.id && c.size === item.size && (c.color || '') === (item.color || '')
   );
+
+  // Calculate what the new total would be after adding
+  const addedPrice  = existing ? price : price;   // same unit price either way
+  const newTotal    = cartTotal(cart) + addedPrice;
+
+  if (newTotal > ORDER_LIMIT) {
+    openCart();
+    // Render so the warning becomes visible
+    saveCart(cart);
+    showCartLimitWarning();
+    return;
+  }
+
   if (existing) {
     existing.qty = (existing.qty || 1) + 1;
   } else {
@@ -40,8 +69,10 @@ function removeFromCart(id, size, color) {
   saveCart(cart);
 }
 
+// ── Badge ──────────────────────────────────────────────────────────
+
 function updateCartBadge() {
-  const cart = getCart();
+  const cart  = getCart();
   const count = cart.reduce((sum, c) => sum + (c.qty || 1), 0);
   document.querySelectorAll('#cartCount').forEach(el => {
     el.textContent = count;
@@ -49,34 +80,42 @@ function updateCartBadge() {
   });
 }
 
+// ── Limit warning ──────────────────────────────────────────────────
+
+function showCartLimitWarning() {
+  const el = document.getElementById('cartLimitWarning');
+  if (el) el.style.display = 'block';
+}
+
+function hideCartLimitWarning() {
+  const el = document.getElementById('cartLimitWarning');
+  if (el) el.style.display = 'none';
+}
+
+// ── Render cart drawer ─────────────────────────────────────────────
+
 function renderCart() {
-  const cart = getCart();
-  const itemsEl = document.getElementById('cartItems');
-  const emptyEl = document.getElementById('cartEmpty');
-  const footerEl = document.getElementById('cartFooter');
+  const cart      = getCart();
+  const itemsEl   = document.getElementById('cartItems');
+  const emptyEl   = document.getElementById('cartEmpty');
+  const footerEl  = document.getElementById('cartFooter');
   const subtotalEl = document.getElementById('cartSubtotal');
 
   if (!itemsEl) return;
 
-  // Clear existing items (keep the empty message node)
   Array.from(itemsEl.querySelectorAll('.cart-item')).forEach(el => el.remove());
 
   if (cart.length === 0) {
-    if (emptyEl) emptyEl.style.display = 'block';
-    if (footerEl) footerEl.style.display = 'none';
+    if (emptyEl)   emptyEl.style.display   = 'block';
+    if (footerEl)  footerEl.style.display  = 'none';
+    hideCartLimitWarning();
     return;
   }
 
-  if (emptyEl) emptyEl.style.display = 'none';
+  if (emptyEl)  emptyEl.style.display  = 'none';
   if (footerEl) footerEl.style.display = 'block';
 
-  let total = 0;
-
   cart.forEach(item => {
-    const price = parseFloat(String(item.price).replace(/[^0-9.]/g, ''));
-    const lineTotal = price * (item.qty || 1);
-    total += lineTotal;
-
     const div = document.createElement('div');
     div.className = 'cart-item';
     div.innerHTML = `
@@ -87,7 +126,7 @@ function renderCart() {
         <div class="cart-item-name">${item.name}</div>
         ${item.color ? `<div class="cart-item-meta">COLOR: ${item.color}</div>` : ''}
         <div class="cart-item-meta">SIZE: ${item.size}${item.qty > 1 ? ` &times; ${item.qty}` : ''}</div>
-        <div class="cart-item-price">$${lineTotal.toFixed(0)}</div>
+        <div class="cart-item-price">Complimentary</div>
       </div>
       <button class="cart-remove-btn" aria-label="Remove">✕</button>
     `;
@@ -97,8 +136,18 @@ function renderCart() {
     itemsEl.appendChild(div);
   });
 
-  if (subtotalEl) subtotalEl.textContent = `$${total.toFixed(0)}`;
+  // Show "Complimentary" as subtotal — internal total used only for cap
+  if (subtotalEl) subtotalEl.textContent = 'Complimentary';
+
+  // Re-evaluate limit warning after every render
+  if (cartTotal(cart) >= ORDER_LIMIT) {
+    showCartLimitWarning();
+  } else {
+    hideCartLimitWarning();
+  }
 }
+
+// ── Open / close ───────────────────────────────────────────────────
 
 function openCart() {
   document.getElementById('cartDrawer')?.classList.add('open');
@@ -110,7 +159,7 @@ function closeCart() {
   document.getElementById('cartOverlay')?.classList.remove('open');
 }
 
-/* ── Cart intake form ───────────────────────────────────────────── */
+// ── Cart intake form ───────────────────────────────────────────────
 
 function showCartForm(type) {
   const btnRow = document.getElementById('cartBtnRow');
@@ -166,7 +215,8 @@ function submitCartIntake(e, type) {
   window.location.href = 'checkout.html';
 }
 
-// Wire up cart toggle buttons
+// ── Init ───────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
