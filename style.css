@@ -331,7 +331,7 @@ img { display: block; max-width: 100%; }
   margin: 10px 0 0;
 }
 
-/* ? help button */
+/* ? help button — now floating bottom-right, nav version kept for legacy */
 .nav-help-btn {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 15px;
@@ -339,6 +339,35 @@ img { display: block; max-width: 100%; }
   color: #000080;
   text-decoration: none;
   opacity: 0.75;
+}
+
+/* Floating ? button — fixed bottom-right on every page */
+.floating-help-btn {
+  position: fixed;
+  bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  right: 32px;
+  z-index: 500;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #000080;
+  background: #fff;
+  color: #000080;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 12px rgba(0, 0, 128, 0.12);
+  line-height: 1;
+}
+
+.floating-help-btn:hover {
+  background: #f0f0f8;
+  box-shadow: 0 4px 18px rgba(0, 0, 128, 0.20);
 }
 
 .cart-badge {
