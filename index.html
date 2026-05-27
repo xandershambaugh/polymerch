@@ -16,15 +16,29 @@
       overflow: hidden;
     }
 
-    /* TV static canvas fills entire viewport behind everything */
+    /* TV static canvas — kept but hidden */
     #staticCanvas {
       display: none;
     }
 
     body {
-      background-color: #fff;
-      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
+      background-color: #111;
+      background-image: url('assets/images/password-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Dot overlay: white circles with difference blend — each dot
+       becomes the exact inverse of whatever pixel is beneath it   */
+    .dot-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, #ffffff 1.2px, transparent 1.2px);
       background-size: 24px 24px;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 3;
     }
 
     /* Header sits above canvas */
@@ -116,8 +130,11 @@
 </head>
 <body>
 
-  <!-- TV STATIC CANVAS -->
+  <!-- TV STATIC CANVAS (hidden) -->
   <canvas id="staticCanvas"></canvas>
+
+  <!-- DOT OVERLAY — difference-blend inverts each dot against the bg image -->
+  <div class="dot-overlay"></div>
 
   <!-- TICKER -->
   <div class="site-ticker">
