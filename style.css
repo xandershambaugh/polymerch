@@ -1126,7 +1126,8 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 640px) {
   .nav-left { display: none; }
-  .nav-wordmark { font-size: 16px; }
+  .nav-inner { grid-template-columns: 1fr auto; }
+  .nav-wordmark { grid-column: 1; grid-row: 1; justify-self: start; }
   .product-grid { grid-template-columns: repeat(2, 1fr); }
   .related-grid { grid-template-columns: repeat(2, 1fr); }
   .cart-drawer { width: 100%; }
