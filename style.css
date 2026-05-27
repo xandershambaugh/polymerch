@@ -220,6 +220,99 @@ img { display: block; max-width: 100%; }
 
 .nav-icon-btn svg { width: 18px; height: 18px; }
 
+/* ── Employee login modal ─────────────────────────────────── */
+#am-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: rgba(0, 0, 0, 0.30);
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 68px;
+  padding-right: 16px;
+}
+
+#am-card {
+  background: #fff;
+  width: 284px;
+  padding: 28px 28px 24px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+}
+
+.am-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #999;
+  margin: 0 0 16px;
+}
+
+.am-email-display {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: #000080;
+  margin: 0 0 20px;
+  word-break: break-all;
+}
+
+.am-input {
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #000080;
+  padding: 6px 0 8px;
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.am-input::placeholder { color: #ccc; letter-spacing: 0.08em; }
+.am-input:focus { border-bottom-color: #000080; }
+
+.am-btn {
+  display: block;
+  width: 100%;
+  padding: 11px 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.am-btn-primary {
+  background: #000080;
+  color: #fff;
+}
+.am-btn-primary:hover { background: #00006a; }
+
+.am-btn-outline {
+  background: transparent;
+  color: #000080;
+  border: 1px solid #000080;
+}
+.am-btn-outline:hover { background: #efefef; }
+
+.am-err {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ff4444;
+  margin: 10px 0 0;
+}
+
 /* ? help button */
 .nav-help-btn {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
