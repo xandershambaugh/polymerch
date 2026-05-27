@@ -31,13 +31,14 @@
     }
     .pdp-info::-webkit-scrollbar { display: none; }
 
-    /* RIGHT — single-column stacked gallery */
+    /* RIGHT — hero + thumbnail tile gallery */
     .pdp-gallery {
       display: flex;
       flex-direction: column;
+      gap: 8px;
     }
 
-    .pdp-gallery img {
+    .pdp-gallery-hero img {
       display: block;
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -47,7 +48,28 @@
       transition: opacity 0.15s;
     }
 
-    .pdp-gallery img:hover { opacity: 0.88; }
+    .pdp-gallery-hero img:hover { opacity: 0.88; }
+
+    .pdp-gallery-thumbs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .pdp-thumb {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: border-color 0.15s, opacity 0.15s;
+      opacity: 0.55;
+    }
+
+    .pdp-thumb:hover { opacity: 0.85; }
+    .pdp-thumb.active { border-color: #000080; opacity: 1; }
 
     /* Size error badge */
     .size-err {
@@ -614,18 +636,44 @@
     } else {
       document.title = `${product.name} — Polymarket`;
 
-      // Build image gallery from product.images array
+      // Build image gallery: large hero + thumbnail tiles below
       const gallery = document.getElementById('pdpGallery');
       const allImages = product.images && product.images.length ? product.images : [];
+      _galleryImages = allImages; // store for zoom lightbox
 
-      allImages.forEach((src, i) => {
-        const el = document.createElement('img');
-        el.src = src;
-        el.alt = `${product.name} — view ${i + 1}`;
-        el.loading = i === 0 ? 'eager' : 'lazy';
-        el.addEventListener('click', () => openZoom(i));
-        gallery.appendChild(el);
-      });
+      // Hero image
+      const heroDiv = document.createElement('div');
+      heroDiv.className = 'pdp-gallery-hero';
+      const heroImg = document.createElement('img');
+      heroImg.id = 'pdpHeroImg';
+      heroImg.src = allImages[0] || '';
+      heroImg.alt = product.name + ' — view 1';
+      heroImg.loading = 'eager';
+      heroImg.addEventListener('click', () => openZoom(0));
+      heroDiv.appendChild(heroImg);
+      gallery.appendChild(heroDiv);
+
+      // Thumbnail tiles (only shown when there are 2+ images)
+      if (allImages.length > 1) {
+        const thumbsDiv = document.createElement('div');
+        thumbsDiv.className = 'pdp-gallery-thumbs';
+        thumbsDiv.id = 'pdpThumbs';
+        allImages.forEach((src, i) => {
+          const thumb = document.createElement('img');
+          thumb.className = 'pdp-thumb' + (i === 0 ? ' active' : '');
+          thumb.src = src;
+          thumb.alt = product.name + ' — view ' + (i + 1);
+          thumb.loading = 'lazy';
+          thumb.addEventListener('click', () => {
+            document.getElementById('pdpHeroImg').src = src;
+            document.querySelectorAll('.pdp-thumb').forEach((t, j) => {
+              t.classList.toggle('active', j === i);
+            });
+          });
+          thumbsDiv.appendChild(thumb);
+        });
+        gallery.appendChild(thumbsDiv);
+      }
 
       // Build info panel
       const isOneSize = product.sizeType === 'one-size';
@@ -743,8 +791,10 @@
       // Swap gallery hero image when this colorway has its own image
       const img = btn.dataset.colorImg;
       if (img) {
-        const firstImg = document.querySelector('#pdpGallery img');
-        if (firstImg) firstImg.src = img;
+        const heroImg = document.getElementById('pdpHeroImg') || document.querySelector('#pdpGallery img');
+        if (heroImg) heroImg.src = img;
+        // Deactivate all thumbs (color image doesn't correspond to a thumb)
+        document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
       }
       renderInventoryBar();
     }
@@ -773,12 +823,11 @@
     }
 
     function getCurrentImage() {
-      const firstImg = document.querySelector('#pdpGallery img');
-      if (firstImg) {
-        // Strip origin prefix so we store a relative path
-        return firstImg.src.startsWith('http')
-          ? firstImg.getAttribute('src')
-          : firstImg.src;
+      const heroImg = document.getElementById('pdpHeroImg') || document.querySelector('#pdpGallery img');
+      if (heroImg) {
+        return heroImg.src.startsWith('http')
+          ? heroImg.getAttribute('src')
+          : heroImg.src;
       }
       return product.images && product.images[0] ? product.images[0] : null;
     }
@@ -897,6 +946,13 @@
     // stays blank for products that still need a selection
     setTimeout(renderInventoryBar, 0);
 
+    // Auto-select color from ?color= URL parameter (deep-link from shop tiles)
+    const urlColor = params.get('color');
+    if (urlColor) {
+      const colorBtn = document.querySelector('.color-btn[data-color="' + urlColor.toUpperCase() + '"]');
+      if (colorBtn) selectColor(colorBtn);
+    }
+
     function handleAdd() {
       if (!validate()) return;
       const color = getColor();
@@ -919,9 +975,10 @@ function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch.");
     // ── Zoom lightbox ─────────────────────────────────────
     let _zoomSrcs = [];
     let _zoomIdx  = 0;
+    let _galleryImages = []; // populated when gallery is built
 
     function openZoom(index) {
-      _zoomSrcs = Array.from(document.querySelectorAll('#pdpGallery img')).map(img => img.src);
+      _zoomSrcs = _galleryImages.length ? _galleryImages : [document.getElementById('pdpHeroImg')?.src].filter(Boolean);
       _zoomIdx  = index;
       _renderZoom();
       document.getElementById('zoomOverlay').classList.add('open');
