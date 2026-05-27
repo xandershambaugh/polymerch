@@ -134,7 +134,7 @@
       color: #000080;
     }
     .pdp-sg-link:hover { opacity: 0.7; }
-    /* ── Retro inventory bar ── */
+    /* ── Architectural scale inventory bar ── */
     .inv-wrap {
       margin-top: 18px;
       margin-bottom: 0;
@@ -150,7 +150,7 @@
     }
     .inv-svg {
       width: 100%;
-      height: 22px;
+      height: 14px;
       display: block;
       overflow: visible;
     }
@@ -687,7 +687,7 @@
         <button class="pdp-add-btn" id="addBtn" onclick="handleAdd()">Add to Bag</button>
         <div class="inv-wrap" id="invWrap">
           <p class="inv-subtitle">Inventory Tracker</p>
-          <svg class="inv-svg" id="invSvg" viewBox="0 0 300 22" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="inv-svg" id="invSvg" viewBox="0 0 300 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
           <p class="inv-label" id="invLabel"></p>
         </div>
         ${sizeChart}
@@ -792,7 +792,15 @@
 
     function getStock() {
       const s = localStorage.getItem(INV_KEY);
-      return s !== null ? Math.max(0, parseInt(s, 10)) : INV_MAX;
+      if (s !== null) return Math.max(0, parseInt(s, 10));
+      // First visit: seed a deterministic "random" starting level from product ID
+      let hash = 0;
+      for (let i = 0; i < product.id.length; i++) {
+        hash = Math.imul(hash * 31 + product.id.charCodeAt(i), 1) | 0;
+      }
+      const initial = 3 + (Math.abs(hash) % (INV_MAX - 2)); // 3–10 units
+      setStock(initial);
+      return initial;
     }
 
     function setStock(n) {
@@ -806,42 +814,29 @@
       const btn   = document.getElementById('addBtn');
       if (!svg) return;
 
-      const W = 300, baseY = 6, capH = 16, tickH = 14, ghostH = 5;
-      const margin = 6;
-      const inner  = W - margin * 2;
-      const step   = inner / (INV_MAX + 1);
+      // Architectural scale blocks
+      const W = 300, H = 14;
+      const gap  = 2;
+      const segW = (W - gap * (INV_MAX - 1)) / INV_MAX;
 
       let d = '';
-
-      // Baseline
-      d += `<line x1="${margin}" y1="${baseY}" x2="${W - margin}" y2="${baseY}" stroke="#000080" stroke-width="1"/>`;
-
-      // End caps
-      d += `<line x1="${margin}" y1="${baseY - 8}" x2="${margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="1"/>`;
-      d += `<line x1="${W - margin}" y1="${baseY - 8}" x2="${W - margin}" y2="${baseY + capH - 8}" stroke="#000080" stroke-width="1"/>`;
-
-      // Tick marks
-      for (let i = 1; i <= INV_MAX; i++) {
-        const x = margin + step * i;
-        if (i <= remaining) {
-          // Active — full tick dropping below baseline
-          d += `<line x1="${x}" y1="${baseY - 6}" x2="${x}" y2="${baseY + tickH - 6}" stroke="#000080" stroke-width="0.5"/>`;
-        } else {
-          // Depleted — ghost stub, barely visible
-          d += `<line x1="${x}" y1="${baseY - ghostH}" x2="${x}" y2="${baseY}" stroke="#000080" stroke-width="0.5" stroke-dasharray="1 1.5" opacity="0.18"/>`;
-        }
+      for (let i = 0; i < INV_MAX; i++) {
+        const x    = i * (segW + gap);
+        const fill = i < remaining ? '#e8e8e8' : '#ffffff';
+        d += '<rect x="' + x.toFixed(2) + '" y="0" width="' + segW.toFixed(2) + '" height="' + H + '" fill="' + fill + '" stroke="#000080" stroke-width="0.75"/>';
       }
 
       svg.innerHTML = d;
 
       if (label) {
-        label.textContent = `← ${remaining} / ${INV_MAX} units →`;
+        const pct = Math.round((remaining / INV_MAX) * 100);
+        label.textContent = remaining + ' / ' + INV_MAX + ' units  ·  ' + pct + '% remaining';
       }
 
       if (btn) {
         const outOfStock = remaining <= 0;
-        btn.disabled     = outOfStock;
-        btn.textContent  = outOfStock ? 'Out of Stock' : 'Add to Bag';
+        btn.disabled    = outOfStock;
+        btn.textContent = outOfStock ? 'Out of Stock' : 'Add to Bag';
       }
     }
 
