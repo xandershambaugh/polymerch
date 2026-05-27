@@ -12,7 +12,9 @@
     html, body {
       height: 100%;
       overflow: hidden;
-      background: #fff;
+      background-color: #fff;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
+      background-size: 24px 24px;
     }
 
     .topo-page {
@@ -38,6 +40,7 @@
       border: none;
       display: block;
       filter: invert(1);
+      background: transparent;
     }
 
     /*
@@ -63,7 +66,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 160px;      /* tall enough to cover title + subtitle rows */
+      height: 68px;       /* covers title text only, leaves charts visible */
       background: #fff;
       z-index: 2;
       pointer-events: none;
