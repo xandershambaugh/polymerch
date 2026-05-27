@@ -74,9 +74,20 @@ img { display: block; max-width: 100%; }
   line-height: 1;
 }
 
+/* Whole link turns green when market is ≥50% (▲) */
+.ticker-track a:has(.ticker-up) {
+  color: #33DD55;
+  text-shadow: 0 0 8px rgba(51, 221, 85, 0.55);
+}
+
+/* Whole link turns red when market is <50% (▼) */
+.ticker-track a:has(.ticker-down) {
+  color: #FF3333;
+  text-shadow: 0 0 8px rgba(255, 51, 51, 0.55);
+}
+
 .ticker-track a:hover {
-  color: #FFAA33;
-  text-shadow: 0 0 12px rgba(255, 170, 50, 0.75);
+  opacity: 0.8;
 }
 
 .ticker-sep {
