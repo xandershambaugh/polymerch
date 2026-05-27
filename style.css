@@ -60,14 +60,14 @@ img { display: block; max-width: 100%; }
 }
 
 .ticker-track a {
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  font-size: 16px;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 14px;
   font-weight: 400;
   color: #FF8800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   white-space: nowrap;
-  padding: 0 32px;
+  padding: 0 10px;
   transition: color 0.2s;
   text-decoration: none;
   text-shadow: 0 0 8px rgba(255, 136, 0, 0.55);
@@ -80,24 +80,24 @@ img { display: block; max-width: 100%; }
 }
 
 .ticker-sep {
-  color: rgba(255, 136, 0, 0.3);
-  font-family: 'Press Start 2P', 'Courier New', monospace;
-  font-size: 14px;
-  user-select: none;
-  flex-shrink: 0;
+  display: none;
 }
 
 /* Directional arrows inside ticker items */
 .ticker-up {
   color: #33DD55;
+  font-size: 1em;
+  vertical-align: middle;
   text-shadow: 0 0 8px rgba(50, 220, 80, 0.6);
-  margin-right: 6px;
+  margin-right: 5px;
 }
 
 .ticker-down {
   color: #FF3333;
+  font-size: 1em;
+  vertical-align: middle;
   text-shadow: 0 0 8px rgba(255, 50, 50, 0.55);
-  margin-right: 6px;
+  margin-right: 5px;
 }
 
 /* ===== HEADER / NAV ===== */
@@ -347,27 +347,18 @@ img { display: block; max-width: 100%; }
   bottom: calc(32px + env(safe-area-inset-bottom, 0px));
   right: 32px;
   z-index: 500;
-  width: 44px;
-  height: 44px;
-  border: 1.5px solid #000080;
-  background: #fff;
   color: #000080;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-decoration: none;
-  border-radius: 50%;
-  transition: background 0.15s, box-shadow 0.15s;
-  box-shadow: 0 2px 12px rgba(0, 0, 128, 0.12);
+  opacity: 0.6;
+  transition: opacity 0.15s;
   line-height: 1;
 }
 
 .floating-help-btn:hover {
-  background: #f0f0f8;
-  box-shadow: 0 4px 18px rgba(0, 0, 128, 0.20);
+  opacity: 1;
 }
 
 .cart-badge {
