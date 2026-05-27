@@ -45,12 +45,22 @@
     }
   }
 
+  // ── Direction arrow based on YES probability ───────────────────────────
+  function arrow(prob) {
+    if (!prob) return '';
+    const n = parseInt(prob, 10);
+    if (isNaN(n)) return '';
+    return n >= 50
+      ? '<span class="ticker-up">▲</span>'
+      : '<span class="ticker-down">▼</span>';
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────
   function buildTicker(items) {
-    // Duplicate the list for a seamless infinite loop (matches xandershambaugh.com technique)
+    // Duplicate the list for a seamless infinite loop
     const all = [...items, ...items];
     track.innerHTML = all.map(item => `
-      <a href="https://polymarket.com/event/${item.slug}" target="_blank" rel="noopener noreferrer">${item.title}${item.prob ? ' — ' + item.prob : ''}</a>
+      <a href="https://polymarket.com/event/${item.slug}" target="_blank" rel="noopener noreferrer">${arrow(item.prob)}${item.title}${item.prob ? ' ' + item.prob : ''}</a>
       <span class="ticker-sep">/</span>
     `).join('');
   }

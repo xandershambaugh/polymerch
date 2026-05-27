@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap');
 
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +40,7 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
   background: #0d0d0d;
   border-bottom: 1px solid #000;
-  height: 36px;
+  height: 46px;
   display: flex;
   align-items: center;
   position: relative;
@@ -60,17 +60,18 @@ img { display: block; max-width: 100%; }
 }
 
 .ticker-track a {
-  font-family: 'Share Tech Mono', 'Courier New', monospace;
-  font-size: 13px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 16px;
   font-weight: 400;
   color: #FF8800;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
-  padding: 0 28px;
+  padding: 0 32px;
   transition: color 0.2s;
   text-decoration: none;
   text-shadow: 0 0 8px rgba(255, 136, 0, 0.55);
+  line-height: 1;
 }
 
 .ticker-track a:hover {
@@ -79,12 +80,24 @@ img { display: block; max-width: 100%; }
 }
 
 .ticker-sep {
-  color: rgba(255, 136, 0, 0.35);
-  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  color: rgba(255, 136, 0, 0.3);
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   font-size: 14px;
   user-select: none;
   flex-shrink: 0;
-  text-shadow: 0 0 6px rgba(255, 136, 0, 0.3);
+}
+
+/* Directional arrows inside ticker items */
+.ticker-up {
+  color: #33DD55;
+  text-shadow: 0 0 8px rgba(50, 220, 80, 0.6);
+  margin-right: 6px;
+}
+
+.ticker-down {
+  color: #FF3333;
+  text-shadow: 0 0 8px rgba(255, 50, 50, 0.55);
+  margin-right: 6px;
 }
 
 /* ===== HEADER / NAV ===== */
