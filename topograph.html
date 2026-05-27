@@ -53,6 +53,40 @@
       pointer-events: none;
       z-index: 1;
     }
+
+    /*
+     * White cover — hides the "POLYMARKET" title rendered
+     * inside the iframe. Sits above the tint so it's unblended.
+     */
+    .topo-cover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 160px;      /* tall enough to cover title + subtitle rows */
+      background: #fff;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Caption — our own HTML, pinned bottom-left, above the tint */
+    .topo-caption {
+      position: absolute;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      left: 32px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .topo-caption p {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #000080;
+      line-height: 1.8;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -104,6 +138,15 @@
       ></iframe>
       <!-- Navy screen-blend tint to colour the lines -->
       <div class="topo-tint"></div>
+
+      <!-- White cover: hides iframe's built-in POLYMARKET title text -->
+      <div class="topo-cover"></div>
+
+      <!-- Caption: our HTML, bottom-left, unaffected by the tint blend -->
+      <div class="topo-caption">
+        <p>Current Prediction Market Landscape</p>
+        <p>February 22, 2026</p>
+      </div>
     </div>
 
   </div><!-- /.topo-page -->
