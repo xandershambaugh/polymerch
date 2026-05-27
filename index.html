@@ -25,18 +25,19 @@
       background-color: #fff;
     }
 
-    /* Background image at 30% opacity, sits below the dot grid */
+    /* Background image layers — crossfade rotation at 30% opacity */
     .password-bg {
       position: fixed;
       inset: 0;
-      background-image: url('assets/images/password-bg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0.3;
       pointer-events: none;
       z-index: 1;
+      transition: opacity 1.5s ease-in-out;
     }
+    .password-bg.bg-visible { opacity: 0.3; }
+    .password-bg.bg-hidden  { opacity: 0; }
 
     /* Dot grid on top of the image — original navy dots on white */
     .dot-overlay {
@@ -140,10 +141,11 @@
   <!-- TV STATIC CANVAS (hidden) -->
   <canvas id="staticCanvas"></canvas>
 
-  <!-- BACKGROUND IMAGE at 20% opacity -->
-  <div class="password-bg"></div>
+  <!-- BACKGROUND IMAGE crossfade layers -->
+  <div class="password-bg bg-visible" id="bgA"></div>
+  <div class="password-bg bg-hidden"  id="bgB"></div>
 
-  <!-- DOT OVERLAY — original navy dot grid on top of the image -->
+  <!-- DOT OVERLAY — original navy dot grid on top of the images -->
   <div class="dot-overlay"></div>
 
   <!-- TICKER -->
@@ -192,6 +194,43 @@
   </main>
 
   <script>
+    // ── Background image crossfade rotation ─────────────────────────────
+    (function () {
+      const IMAGES = [
+        'assets/images/password-bg-01.jpg',
+        'assets/images/password-bg-02.png',
+        'assets/images/password-bg-03.jpg',
+        'assets/images/password-bg-04.jpg',
+        'assets/images/password-bg-05.jpg',
+        'assets/images/password-bg-06.png',
+      ];
+
+      const bgA = document.getElementById('bgA');
+      const bgB = document.getElementById('bgB');
+
+      // Start at a random image
+      let idx    = Math.floor(Math.random() * IMAGES.length);
+      let active = 'A';
+      bgA.style.backgroundImage = "url('" + IMAGES[idx] + "')";
+
+      function next() {
+        idx = (idx + 1) % IMAGES.length;
+        if (active === 'A') {
+          bgB.style.backgroundImage = "url('" + IMAGES[idx] + "')";
+          bgA.classList.replace('bg-visible', 'bg-hidden');
+          bgB.classList.replace('bg-hidden',  'bg-visible');
+          active = 'B';
+        } else {
+          bgA.style.backgroundImage = "url('" + IMAGES[idx] + "')";
+          bgB.classList.replace('bg-visible', 'bg-hidden');
+          bgA.classList.replace('bg-hidden',  'bg-visible');
+          active = 'A';
+        }
+      }
+
+      setInterval(next, 5000); // crossfade every 5 s
+    })();
+
     // ── TV Static + Glitches ─────────────────────────────────────────────
     const canvas = document.getElementById('staticCanvas');
     const ctx    = canvas.getContext('2d');
