@@ -1131,6 +1131,9 @@ img { display: block; max-width: 100%; }
   .product-grid { grid-template-columns: repeat(2, 1fr); }
   .related-grid { grid-template-columns: repeat(2, 1fr); }
   .cart-drawer { width: 100%; }
+  .cart-footer {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 16px));
+  }
 
   /* Footer — hide certain links on mobile */
   .footer-mobile-hide { display: none; }
