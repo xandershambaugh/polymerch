@@ -862,6 +862,10 @@
       }
     }
 
+    // Render on load — shows bar for one-size/no-color products immediately,
+    // stays blank for products that still need a selection
+    setTimeout(renderInventoryBar, 0);
+
     function handleAdd() {
       if (!validate()) return;
       const color = getColor();
