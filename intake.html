@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket — Order Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background-color: #fff;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.18) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Centered card — same layer as password gate */
+    .intake-gate {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* ── Card ──────────────────────────────────────────────────── */
+    .intake-card {
+      pointer-events: all;
+      width: 460px;
+      padding: 0 0 36px;
+      background: rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    /* ── Tab toggle row ────────────────────────────────────────── */
+    .tab-row {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 16px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.40);
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .tab-btn:first-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .tab-btn.active {
+      background: #0000ff;
+      color: #fff;
+    }
+
+    .tab-btn:not(.active):hover {
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* ── Form panels ───────────────────────────────────────────── */
+    .intake-panel {
+      padding: 32px 44px 0;
+    }
+
+    .intake-field {
+      margin-bottom: 20px;
+    }
+
+    .intake-field label {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.40);
+      margin-bottom: 7px;
+    }
+
+    .intake-field input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 7px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .intake-field input:focus {
+      border-bottom-color: rgba(255, 255, 255, 0.70);
+    }
+
+    .intake-field input::placeholder {
+      color: rgba(255, 255, 255, 0.18);
+      letter-spacing: 0.10em;
+    }
+
+    /* ── Submit button ─────────────────────────────────────────── */
+    .intake-submit {
+      display: block;
+      width: calc(100% - 88px);
+      margin: 28px 44px 0;
+      padding: 12px 0;
+      background: #0000ff;
+      border: none;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .intake-submit:hover { background: #0000cc; }
+
+    /* ── Error message ─────────────────────────────────────────── */
+    .intake-error {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #ff4444;
+      margin: 12px 44px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TICKER -->
+  <div class="site-ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M375.84 389.422C375.84 403.572 375.84 410.647 371.212 414.154C366.585 417.662 359.773 415.75 346.15 411.927L127.22 350.493C119.012 348.19 114.907 347.038 112.534 343.907C110.161 340.776 110.161 336.513 110.161 327.988V184.012C110.161 175.487 110.161 171.224 112.534 168.093C114.907 164.962 119.012 163.81 127.22 161.507L346.15 100.072C359.773 96.2495 366.585 94.338 371.212 97.8455C375.84 101.353 375.84 108.428 375.84 122.578V389.422ZM164.761 330.463L346.035 381.337V279.595L164.761 330.463ZM139.963 306.862L321.201 256L139.963 205.138V306.862ZM164.759 181.537L346.035 232.406V130.663L164.759 181.537Z" fill="black"/>
+        </svg>
+        Polymarket
+      </a>
+      <div class="nav-center">
+        <a href="shop.html">SHOP</a>
+      </div>
+      <div class="nav-right">
+        <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+        <button class="nav-icon-btn" title="Account">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="10" cy="7" r="3.5"/>
+            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- INTAKE GATE -->
+  <main class="intake-gate">
+    <div class="intake-card">
+
+      <!-- Tab toggles -->
+      <div class="tab-row">
+        <button class="tab-btn active" id="tabClient" onclick="switchTab('client')">For Client</button>
+        <button class="tab-btn" id="tabEmployee" onclick="switchTab('employee')">For Employee</button>
+      </div>
+
+      <!-- ── FOR CLIENT panel ──────────────────────────────────── -->
+      <div class="intake-panel" id="panelClient">
+        <form id="formClient" onsubmit="submitIntake(event, 'client')">
+          <div class="intake-field">
+            <label>Employee Name</label>
+            <input type="text" name="employeeName" placeholder="Full name" required>
+          </div>
+          <div class="intake-field">
+            <label>Employee Department</label>
+            <input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required>
+          </div>
+          <div class="intake-field">
+            <label>VIP Client Name</label>
+            <input type="text" name="clientName" placeholder="e.g. Logan Paul" required>
+          </div>
+          <div class="intake-field">
+            <label>VIP Client Email Address</label>
+            <input type="email" name="clientEmail" placeholder="client@email.com" required>
+          </div>
+          <div class="intake-field">
+            <label>VIP Client Mailing Address</label>
+            <input type="text" name="clientAddress" placeholder="Street, City, State, ZIP" required>
+          </div>
+          <button type="submit" class="intake-submit">Continue to Shop →</button>
+          <p class="intake-error" id="errorClient" style="display:none;">Please fill in all fields.</p>
+        </form>
+      </div>
+
+      <!-- ── FOR EMPLOYEE panel ────────────────────────────────── -->
+      <div class="intake-panel" id="panelEmployee" style="display:none;">
+        <form id="formEmployee" onsubmit="submitIntake(event, 'employee')">
+          <div class="intake-field">
+            <label>Employee Name</label>
+            <input type="text" name="employeeName" placeholder="Full name" required>
+          </div>
+          <div class="intake-field">
+            <label>Employee Department</label>
+            <input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required>
+          </div>
+          <div class="intake-field">
+            <label>Employee Email Address</label>
+            <input type="email" name="employeeEmail" placeholder="you@polymarket.com" required>
+          </div>
+          <div class="intake-field">
+            <label>Employee Mailing Address</label>
+            <input type="text" name="employeeAddress" placeholder="Street, City, State, ZIP" required>
+          </div>
+          <div class="intake-field">
+            <label>Phone Number</label>
+            <input type="tel" name="phone" placeholder="+1 (000) 000-0000" required>
+          </div>
+          <button type="submit" class="intake-submit">Continue to Shop →</button>
+          <p class="intake-error" id="errorEmployee" style="display:none;">Please fill in all fields.</p>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    if (sessionStorage.getItem('pm_auth') !== 'true') {
+      window.location.replace('index.html');
+    }
+
+    function switchTab(tab) {
+      const isClient = (tab === 'client');
+      document.getElementById('tabClient').classList.toggle('active', isClient);
+      document.getElementById('tabEmployee').classList.toggle('active', !isClient);
+      document.getElementById('panelClient').style.display   = isClient ? 'block' : 'none';
+      document.getElementById('panelEmployee').style.display = isClient ? 'none'  : 'block';
+    }
+
+    function submitIntake(e, type) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {};
+      new FormData(form).forEach((v, k) => { data[k] = v.trim(); });
+
+      // Ensure all fields filled
+      if (Object.values(data).some(v => !v)) {
+        document.getElementById('error' + (type === 'client' ? 'Client' : 'Employee')).style.display = 'block';
+        return;
+      }
+
+      // Save to sessionStorage for checkout to use
+      sessionStorage.setItem('pm_intake', JSON.stringify({ type, ...data }));
+      window.location.href = 'shop.html';
+    }
+  </script>
+  <script src="js/ticker.js"></script>
+</body>
+</html>

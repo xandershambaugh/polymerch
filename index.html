@@ -121,6 +121,11 @@
   <!-- TV STATIC CANVAS -->
   <canvas id="staticCanvas"></canvas>
 
+  <!-- TICKER -->
+  <div class="site-ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
   <!-- HEADER -->
   <header class="site-header">
     <nav class="nav-inner">
@@ -255,14 +260,14 @@
     const errorEl = document.getElementById('passwordError');
 
     if (sessionStorage.getItem('pm_auth') === 'true') {
-      window.location.replace('shop.html');
+      window.location.replace('intake.html');
     }
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       if (input.value === CORRECT_PASSWORD) {
         sessionStorage.setItem('pm_auth', 'true');
-        window.location.replace('shop.html');
+        window.location.replace('intake.html');
       } else {
         errorEl.style.display = 'block';
         input.value = '';
@@ -275,5 +280,6 @@
     input.addEventListener('input', () => { errorEl.style.display = 'none'; });
 
   </script>
+  <script src="js/ticker.js"></script>
 </body>
 </html>
