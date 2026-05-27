@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Polymarket — Markets Topography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .topo-page {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Topography viewer ─────────────────────────────────── */
+    .topo-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;         /* contain the mix-blend-mode */
+    }
+
+    /* The iframe: inverted so black bg → white bg */
+    .topo-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      filter: invert(1);
+    }
+
+    /*
+     * Screen-blend navy overlay:
+     *   screen(white, #000080) = white  ← background stays white
+     *   screen(black, #000080) = #000080 ← lines become navy
+     */
+    .topo-tint {
+      position: absolute;
+      inset: 0;
+      background: #000080;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TICKER -->
+  <div class="site-ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <div class="topo-page">
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <nav class="nav-inner">
+        <div class="nav-left">
+          <a href="shop.html" class="nav-pill-btn">SHOP</a>
+        </div>
+
+        <a href="index.html" class="nav-wordmark">POLYMARKET</a>
+
+        <div class="nav-right">
+          <div style="height:16px;width:1px;background:rgba(0,0,0,0.12);margin:0 4px;"></div>
+          <a href="topograph.html" class="nav-icon-btn nav-help-btn" title="Markets Topography" aria-current="page">?</a>
+          <button class="nav-icon-btn" title="Account">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="10" cy="7" r="3.5"/>
+              <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+            </svg>
+          </button>
+          <button class="nav-icon-btn" title="Search">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="8.5" cy="8.5" r="5"/>
+              <path d="M15 15l-3-3"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- TOPOGRAPHY VIEWER -->
+    <div class="topo-wrap">
+      <iframe
+        class="topo-frame"
+        src="https://agent-699b90d264a32504c40eb6a9--polytopograph.netlify.app/"
+        frameborder="0"
+        scrolling="no"
+        title="Polymarket Markets Topography"
+        allowfullscreen
+      ></iframe>
+      <!-- Navy screen-blend tint to colour the lines -->
+      <div class="topo-tint"></div>
+    </div>
+
+  </div><!-- /.topo-page -->
+
+  <script>
+    if (sessionStorage.getItem('pm_auth') !== 'true') {
+      window.location.replace('index.html');
+    }
+  </script>
+  <script src="js/ticker.js"></script>
+</body>
+</html>
