@@ -66,14 +66,14 @@
 
     /* ── Info panel — block format ── */
     .pdp-name {
-      font-family: var(--font-mono);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 22px;
-      font-weight: 400;
-      letter-spacing: 0.08em;
+      font-weight: 700;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
       margin-bottom: 8px;
       line-height: 1.2;
-      color: #0000ff;
+      color: #000080;
     }
     .pdp-material {
       font-family: var(--font-mono);
@@ -88,7 +88,7 @@
       font-size: 11px;
       letter-spacing: 0.10em;
       margin-bottom: 30px;
-      color: #0000ff;
+      color: #000080;
     }
     .pdp-size-label {
       display: block;
@@ -135,39 +135,25 @@
     .pdp-sg-link:hover { opacity: 1; }
     .pdp-add-btn {
       width: 100%;
-      background: #0000ff;
-      color: white;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 15px 0;
-      cursor: pointer;
-      margin-bottom: 8px;
-      border: none;
-      transition: opacity 0.15s;
-    }
-    .pdp-add-btn:hover { opacity: 0.82; }
-    .pdp-buy-btn {
-      width: 100%;
       background: white;
-      color: #0000ff;
-      border: 1px solid #0000ff;
+      color: #000080;
+      border: 1px solid #000080;
       font-family: var(--font-mono);
       font-size: 10px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       padding: 15px 0;
       cursor: pointer;
+      margin-bottom: 0;
       transition: background 0.15s, color 0.15s;
     }
-    .pdp-buy-btn:hover { background: #0000ff; color: white; }
+    .pdp-add-btn:hover { background: #000080; color: white; }
 
     /* Request block */
     .pdp-subscribe {
       margin-top: 44px;
       background: #f4f4f4;
-      color: #0000ff;
+      color: #000080;
       border: 1px solid #e0e0e0;
       padding: 18px 20px;
     }
@@ -178,7 +164,7 @@
       text-transform: uppercase;
       font-weight: 700;
       margin-bottom: 10px;
-      color: #0000ff;
+      color: #000080;
     }
     .pdp-sub-row {
       display: flex;
@@ -192,12 +178,12 @@
       padding: 8px 12px;
       font-family: var(--font-mono);
       font-size: 10px;
-      color: #0000ff;
+      color: #000080;
       letter-spacing: 0.04em;
     }
     .pdp-sub-row input::placeholder { color: rgba(0,0,200,0.35); }
     .pdp-sub-btn {
-      color: #0000ff;
+      color: #000080;
       padding: 0 14px;
       font-size: 16px;
       border-left: 1px solid #c0c0d4;
@@ -224,7 +210,7 @@
       margin-bottom: 10px;
     }
     .pdp-color-selected-name {
-      color: #0000ff;
+      color: #000080;
       font-weight: 700;
     }
     .pdp-color-buttons {
@@ -236,8 +222,8 @@
     /* Color buttons share .size-btn styles; selected state uses blue outline */
     .color-btn.selected {
       background: white;
-      color: #0000ff;
-      border-color: #0000ff;
+      color: #000080;
+      border-color: #000080;
     }
     .color-err {
       display: inline-block;
@@ -292,7 +278,7 @@
       color: #333;
       white-space: nowrap;
     }
-    .pdp-size-chart tr.chart-active td { color: #0000ff; }
+    .pdp-size-chart tr.chart-active td { color: #000080; }
 
     /* Size guide table below images */
     .size-guide-wrap {
@@ -672,7 +658,6 @@
         ${colorSection}
         ${sizeSection}
         <button class="pdp-add-btn" onclick="handleAdd()">Add to Bag</button>
-        <button class="pdp-buy-btn" onclick="handleBuy()">Buy Now</button>
         ${sizeChart}
       `;
 
@@ -781,20 +766,7 @@
       });
     }
 
-    function handleBuy() {
-      if (!validate()) return;
-      const color = getColor();
-      const size  = getSize();
-      addToCart({
-        id: product.id, name: product.name, price: product.price,
-        size, color: color || undefined,
-        image: product.images && product.images[0] ? product.images[0] : null,
-        shopifyVariantId: product.shopifyVariants[size] || null,
-      });
-      openCart();
-    }
-
-    function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }
+function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch."); e.target.reset(); }
 
     // ── Zoom lightbox ─────────────────────────────────────
     let _zoomSrcs = [];
