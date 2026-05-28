@@ -368,14 +368,25 @@ function draw() {
 
   const numMarkets = markets.length;
 
+  // Scale relative to a 1440-wide reference so charts stay proportional on mobile.
+  // ridgeH was H*0.038 (ties amplitude to height), which looks squished when the
+  // viewport is narrow. Tying it to W keeps each wave's aspect ratio consistent.
+  const DESIGN_W = 1440;
+  const scale = W / DESIGN_W;
+
   const ridgeW = W * 0.54;
-  const ridgeH = H * 0.038;
+  const ridgeH = W * 0.024;        // was H * 0.038 — now proportional to width
 
   const originX = W * 0.5;
   const originY = H * 0.5;
 
   const stepX = W * 0.008;
   const stepY = H * 0.027;
+
+  // Scale font and label offsets with viewport width
+  const labelFontSize = Math.max(6, Math.round(10 * scale));
+  const labelGap      = Math.max(4, Math.round(14 * scale));
+  const rightGap      = Math.max(6, Math.round(60 * scale));
 
   const totalRows = numMarkets;
   const startOffsetX = -(totalRows * stepX) / 2;
@@ -447,7 +458,7 @@ function draw() {
   }
 
   // Draw left labels
-  ctx.font = '10px "Share Tech Mono", monospace';
+  ctx.font = `${labelFontSize}px "Share Tech Mono", monospace`;
   ctx.textAlign = 'right';
   for (const lp of labelPositions) {
     if (lp.isHovered) {
@@ -456,7 +467,7 @@ function draw() {
       const opacity = 0.45 + lp.baseProb * 0.4;
       ctx.fillStyle = `rgba(255,255,255,${opacity})`;
     }
-    ctx.fillText(lp.label.toUpperCase(), lp.x - 14, lp.y + 3);
+    ctx.fillText(lp.label.toUpperCase(), lp.x - labelGap, lp.y + 3);
   }
 
   // Draw right labels
@@ -472,7 +483,7 @@ function draw() {
       const opacity = 0.35 + rp.market.baseProb * 0.35;
       ctx.fillStyle = `rgba(255,255,255,${opacity})`;
     }
-    ctx.fillText(`${displayPct}% ${descriptor}`, rp.rightX + 60, rp.y + 3);
+    ctx.fillText(`${displayPct}% ${descriptor}`, rp.rightX + rightGap, rp.y + 3);
   }
 }
 
