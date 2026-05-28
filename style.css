@@ -724,7 +724,23 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.06em;
   color: #000080;
   opacity: 0.6;
-  text-align: center;
+  text-align: right;
+  justify-self: end;
+}
+
+.footer-help-btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #000080;
+  opacity: 0.45;
+  text-decoration: none;
+  justify-self: center;
+  line-height: 1;
+  transition: opacity 0.2s;
+}
+.footer-help-btn:hover {
+  opacity: 1;
 }
 
 /* ===== PRODUCT DETAIL PAGE ===== */
@@ -1400,5 +1416,6 @@ img { display: block; max-width: 100%; }
   .footer-logo svg { display: none; }
   .footer-links { flex-wrap: nowrap; gap: 9px; }
   .footer-links a { font-size: 7px; letter-spacing: 0.05em; }
-  .footer-copy { font-size: 7px; white-space: nowrap; }
+  .footer-copy { font-size: 7px; white-space: nowrap; text-align: right; }
+  .footer-help-btn { font-size: 11px; }
 }
