@@ -90,16 +90,21 @@ img { display: block; max-width: 100%; }
   opacity: 0.8;
 }
 
-/* Password page — muted navy at rest, reveal color on hover */
+/* Password + Shop pages — muted navy at rest, reveal color on hover */
 .page-password .ticker-track a,
+.page-shop .ticker-track a,
 .page-password .ticker-track a:has(.ticker-up),
-.page-password .ticker-track a:has(.ticker-down) {
+.page-shop .ticker-track a:has(.ticker-up),
+.page-password .ticker-track a:has(.ticker-down),
+.page-shop .ticker-track a:has(.ticker-down) {
   color: rgba(0, 0, 128, 0.45);
   text-shadow: none;
   transition: color 0.25s, text-shadow 0.25s;
 }
 .page-password .ticker-up,
-.page-password .ticker-down {
+.page-shop .ticker-up,
+.page-password .ticker-down,
+.page-shop .ticker-down {
   color: rgba(0, 0, 128, 0.45);
   text-shadow: none;
   transition: color 0.25s, text-shadow 0.25s;
@@ -107,13 +112,17 @@ img { display: block; max-width: 100%; }
 
 /* Hover reveals market direction color */
 .page-password .ticker-track a:has(.ticker-up):hover,
-.page-password .ticker-track a:has(.ticker-up):hover .ticker-up {
+.page-shop .ticker-track a:has(.ticker-up):hover,
+.page-password .ticker-track a:has(.ticker-up):hover .ticker-up,
+.page-shop .ticker-track a:has(.ticker-up):hover .ticker-up {
   color: #33DD55;
   text-shadow: 0 0 10px rgba(51, 221, 85, 0.65);
   opacity: 1;
 }
 .page-password .ticker-track a:has(.ticker-down):hover,
-.page-password .ticker-track a:has(.ticker-down):hover .ticker-down {
+.page-shop .ticker-track a:has(.ticker-down):hover,
+.page-password .ticker-track a:has(.ticker-down):hover .ticker-down,
+.page-shop .ticker-track a:has(.ticker-down):hover .ticker-down {
   color: #FF3333;
   text-shadow: 0 0 10px rgba(255, 51, 51, 0.65);
   opacity: 1;
@@ -570,6 +579,12 @@ img { display: block; max-width: 100%; }
 }
 
 .product-card:hover .product-card-img { transform: scale(1.04); }
+
+/* Tarot tote is a 1:1 square image; scale it down to match portrait-image cards (~68% width) */
+.card-tarot-tote .product-card-img {
+  width: calc(68% - 22px);
+  height: calc(68% - 22px);
+}
 
 .product-card-placeholder {
   width: 100%;
