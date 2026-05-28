@@ -628,6 +628,8 @@
       window.location.replace('index.html');
     }
 
+    let _galleryImages = []; // declared here so it's accessible throughout this script
+
     const params  = new URLSearchParams(window.location.search);
     const product = getProductById(params.get('id'));
 
@@ -976,7 +978,6 @@ function handleSub(e) { e.preventDefault(); alert("Thanks! We'll be in touch.");
     // ── Zoom lightbox ─────────────────────────────────────
     let _zoomSrcs = [];
     let _zoomIdx  = 0;
-    let _galleryImages = []; // populated when gallery is built
 
     function openZoom(index) {
       _zoomSrcs = _galleryImages.length ? _galleryImages : [document.getElementById('pdpHeroImg')?.src].filter(Boolean);
