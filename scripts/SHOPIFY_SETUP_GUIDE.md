@@ -35,28 +35,27 @@ Everything is pre-built. Follow these steps in order.
 
 ## Step 4 — Run the Product Import Script (~5 min)
 This creates all 21 products with every size/color variant in one shot.
+Uses only the system `python3` — no Node or npm install needed.
 
 ```bash
 cd /path/to/polymerch
 
 SHOPIFY_STORE_DOMAIN=yourstore.myshopify.com \
 SHOPIFY_ADMIN_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxx \
-node scripts/shopify-setup.js
+python3 scripts/shopify-setup.py
 ```
 
-The script will print a `SHOPIFY_VARIANT_IDS` block and save it to
-`scripts/variant-ids.json`.
+The script will:
+- create all products + variants in Shopify,
+- save the IDs to `scripts/variant-ids.json`, and
+- **auto-wire `js/shopify.js`** — inject the `SHOPIFY_VARIANT_IDS` block
+  and flip `SHOPIFY_CONNECTED = true` for you.
 
 ---
 
-## Step 5 — Paste Variant IDs (~2 min)
-Copy the `SHOPIFY_VARIANT_IDS = { ... }` block printed by the script
-and replace the existing one in `js/shopify.js`.
-
-Then flip the switch:
-```js
-const SHOPIFY_CONNECTED = true;   // ← change false → true
-```
+## Step 5 — (Done automatically by Step 4)
+The script writes the variant IDs into `js/shopify.js` and flips the live
+switch. Just `git diff js/shopify.js` to confirm it looks right.
 
 ---
 

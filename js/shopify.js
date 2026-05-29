@@ -55,7 +55,9 @@ const SHOPIFY_VARIANT_IDS = {
  */
 function buildLineItems(cart) {
   return cart.map(item => {
-    const key       = `${item.id}__${item.size}`;
+    // Key must match the import script's format exactly:
+    //   product-id__COLOR__SIZE  (color omitted for single-color products)
+    const key       = [item.id, item.color, item.size].filter(Boolean).join('__');
     const variantId = SHOPIFY_VARIANT_IDS[key];
     if (variantId) {
       return {
@@ -96,13 +98,13 @@ async function createShopifyDraftOrder(formData, cart) {
       shipping_address: {
         first_name: (formData.clientName || formData.employeeName || '').split(' ')[0],
         last_name:  (formData.clientName || formData.employeeName || '').split(' ').slice(1).join(' '),
-        address1:   formData.clientAddress || formData.employeeAddress || '',
+        address1:   formData.address1 || '',
         city:       formData.city  || '',
         province:   formData.state || '',
         zip:        formData.zip   || '',
         country:    'US',
       },
-      email: formData.clientEmail || formData.employeeEmail || '',
+      email: formData.clientEmail || '',
       note: [
         `Order type: ${formData.type === 'client' ? 'VIP Client Gift' : 'Employee'}`,
         `Employee: ${formData.employeeName} — ${formData.employeeDept}`,
