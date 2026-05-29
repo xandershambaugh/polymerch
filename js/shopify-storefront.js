@@ -178,8 +178,10 @@ function sortByCuratedOrder(products) {
 function fetchShopifyProducts() {
   if (_shopifyProductsPromise) return _shopifyProductsPromise;
 
+  // js/products.js declares `const PRODUCTS` — a global lexical binding, NOT a
+  // window property — so reference it by bare name (guarded) rather than window.
   const localFallback = () => sortByCuratedOrder(
-    (typeof window !== 'undefined' && Array.isArray(window.PRODUCTS)) ? window.PRODUCTS : []
+    (typeof PRODUCTS !== 'undefined' && Array.isArray(PRODUCTS)) ? PRODUCTS : []
   );
 
   if (!SHOPIFY_STOREFRONT_TOKEN) {
