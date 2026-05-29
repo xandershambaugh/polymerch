@@ -58,7 +58,9 @@ function buildLineItems(cart) {
     // Key must match the import script's format exactly:
     //   product-id__COLOR__SIZE  (color omitted for single-color products)
     const key       = [item.id, item.color, item.size].filter(Boolean).join('__');
-    const variantId = SHOPIFY_VARIANT_IDS[key];
+    // Prefer the live variant ID carried on the cart item (resolved from the
+    // Storefront API on the product page); fall back to the static map.
+    const variantId = item.shopifyVariantId || SHOPIFY_VARIANT_IDS[key];
     if (variantId) {
       return {
         variant_id: variantId,

@@ -655,6 +655,7 @@
   </aside>
 
   <script src="js/products.js"></script>
+  <script src="js/shopify-storefront.js"></script>
   <script src="js/shopify.js"></script>
   <script src="js/cart.js"></script>
   <script>
@@ -663,14 +664,28 @@
     }
 
     let _galleryImages = []; // declared here so it's accessible throughout this script
+    let product = null;       // populated live from Shopify (or local fallback)
+    let ALL_PRODUCTS = [];    // full catalog, for the related row
 
-    const params  = new URLSearchParams(window.location.search);
-    const product = getProductById(params.get('id'));
+    const params = new URLSearchParams(window.location.search);
 
-    if (!product) {
+    // Load the live catalog from Shopify, then render the requested product.
+    fetchShopifyProducts().then(all => {
+      ALL_PRODUCTS = all;
+      product = all.find(p => p.id === params.get('id')) || null;
+      if (!product) {
+        document.getElementById('productMain').style.display = 'none';
+        document.getElementById('notFound').style.display = 'flex';
+      } else {
+        renderProduct();
+      }
+    }).catch(err => {
+      console.error('[Shopify] product load failed:', err);
       document.getElementById('productMain').style.display = 'none';
       document.getElementById('notFound').style.display = 'flex';
-    } else {
+    });
+
+    function renderProduct() {
       document.title = `${product.name} — Polymarket`;
 
       // Build image gallery: large hero + thumbnail tiles below
@@ -801,7 +816,7 @@
       }
 
       // Related products
-      const related = PRODUCTS.filter(p => p.id !== product.id).slice(0, 5);
+      const related = ALL_PRODUCTS.filter(p => p.id !== product.id).slice(0, 5);
       document.getElementById('relatedGrid').innerHTML = related.map(p => {
         const rSrc = p.images && p.images[0] ? p.images[0] : null;
         return `
@@ -812,6 +827,14 @@
             <div class="related-card-overlay">${p.name}</div>
           </a>`;
       }).join('');
+
+      // Initial inventory bar + deep-linked color selection (?color=)
+      setTimeout(renderInventoryBar, 0);
+      const urlColor = params.get('color');
+      if (urlColor) {
+        const colorBtn = document.querySelector('.color-btn[data-color="' + urlColor.toUpperCase() + '"]');
+        if (colorBtn) selectColor(colorBtn);
+      }
     }
 
     // ── Helpers ──────────────────────────────────────────
@@ -857,6 +880,17 @@
       if (product.sizeType === 'one-size') return 'ONE SIZE';
       const btn = document.querySelector('.size-btn:not(.color-btn).selected');
       return btn ? btn.dataset.size : '';
+    }
+
+    // Resolve the live Shopify variant ID for the chosen color/size combo.
+    function resolveVariantId(color, size) {
+      if (product.variants && product.variants.length) {
+        const match = product.variants.find(v =>
+          (v.size || 'ONE SIZE') === (size || 'ONE SIZE') &&
+          (color ? v.color === color : true));
+        if (match) return match.id;
+      }
+      return (product.shopifyVariants && product.shopifyVariants[size]) || null;
     }
 
     function getCurrentImage() {
@@ -979,17 +1013,6 @@
       }
     }
 
-    // Render on load — shows bar for one-size/no-color products immediately,
-    // stays blank for products that still need a selection
-    setTimeout(renderInventoryBar, 0);
-
-    // Auto-select color from ?color= URL parameter (deep-link from shop tiles)
-    const urlColor = params.get('color');
-    if (urlColor) {
-      const colorBtn = document.querySelector('.color-btn[data-color="' + urlColor.toUpperCase() + '"]');
-      if (colorBtn) selectColor(colorBtn);
-    }
-
     function handleAdd() {
       if (!validate()) return;
       const color = getColor();
@@ -1001,7 +1024,7 @@
         id: product.id, name: product.name, price: product.price,
         size, color: color || undefined,
         image: product.images && product.images[0] ? product.images[0] : null,
-        shopifyVariantId: product.shopifyVariants[size] || null,
+        shopifyVariantId: resolveVariantId(color, size),
       });
       setStockFor(key, stock - 1);
       renderInventoryBar();
