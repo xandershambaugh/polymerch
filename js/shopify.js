@@ -30,7 +30,7 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-const SHOPIFY_CONNECTED  = false;    // ← flip to true when live
+const SHOPIFY_CONNECTED  = true;     // live — orders post to the draft-order proxy
 const DRAFT_ORDER_PROXY  = '/api/create-draft-order';   // Vercel function URL
 
 /**

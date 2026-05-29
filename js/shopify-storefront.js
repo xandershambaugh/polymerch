@@ -21,7 +21,7 @@
  */
 
 const SHOPIFY_STORE_DOMAIN     = 'polyshop-7483.myshopify.com';
-const SHOPIFY_STOREFRONT_TOKEN = '';          // ← paste public Storefront token here
+const SHOPIFY_STOREFRONT_TOKEN = '130572d885058aef942510a495dc0a5d';   // public, read-only
 const SHOPIFY_API_VERSION      = '2024-10';
 
 /**
