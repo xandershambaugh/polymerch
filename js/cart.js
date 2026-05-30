@@ -159,60 +159,142 @@ function closeCart() {
   document.getElementById('cartOverlay')?.classList.remove('open');
 }
 
-// ── Cart intake form ───────────────────────────────────────────────
+// ── Cart intake — Wall-Street terminal modal ───────────────────────────
+// Clicking the green (client) / red (employee) physical button opens a
+// centered amber-on-black terminal form. On submit we stash the data and
+// hand off to checkout.html, which confirms + posts the Shopify order.
 
-function showCartForm(type) {
-  const btnRow = document.getElementById('cartBtnRow');
-  const panel  = document.getElementById('cartIntakePanel');
-  if (!btnRow || !panel) return;
-  btnRow.style.display = 'none';
+const INTAKE_FIELDS = {
+  client: [
+    { name: 'employeeName', label: 'Employee',   placeholder: 'Full name' },
+    { name: 'employeeDept', label: 'Department',  placeholder: 'e.g. Marketing' },
+    { name: 'clientName',   label: 'Recipient',   placeholder: 'VIP client name' },
+    { name: 'clientEmail',  label: 'Email',       placeholder: 'client@email.com', type: 'email' },
+    { name: 'address1',     label: 'Address',     placeholder: 'Street, apt' },
+    { name: 'city',         label: 'City',        placeholder: 'City' },
+    { name: 'state',        label: 'State',       placeholder: 'CA', maxlength: 2 },
+    { name: 'zip',          label: 'Zip',         placeholder: '90210', maxlength: 10 },
+  ],
+  employee: [
+    { name: 'employeeName',  label: 'Employee',   placeholder: 'Full name' },
+    { name: 'employeeDept',  label: 'Department',  placeholder: 'e.g. Marketing' },
+    { name: 'employeeEmail', label: 'Email',       placeholder: 'you@polymarket.com', type: 'email' },
+    { name: 'address1',      label: 'Address',     placeholder: 'Street, apt' },
+    { name: 'city',          label: 'City',        placeholder: 'City' },
+    { name: 'state',         label: 'State',       placeholder: 'CA', maxlength: 2 },
+    { name: 'zip',           label: 'Zip',         placeholder: '90210', maxlength: 10 },
+    { name: 'phone',         label: 'Phone',       placeholder: '+1 (000) 000-0000', type: 'tel' },
+  ],
+};
 
-  const clientFields = `
-    <div class="ci-field"><label>Employee Name</label><input type="text" name="employeeName" placeholder="Full name" required></div>
-    <div class="ci-field"><label>Employee Department</label><input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required></div>
-    <div class="ci-field"><label>VIP Client Name</label><input type="text" name="clientName" placeholder="e.g. Logan Paul" required></div>
-    <div class="ci-field"><label>VIP Client Email</label><input type="email" name="clientEmail" placeholder="client@email.com" required></div>
-    <div class="ci-field"><label>VIP Client Mailing Address</label><input type="text" name="clientAddress" placeholder="Street, City, State, ZIP" required></div>
-  `;
+let _intakeModal = null;
 
-  const employeeFields = `
-    <div class="ci-field"><label>Employee Name</label><input type="text" name="employeeName" placeholder="Full name" required></div>
-    <div class="ci-field"><label>Employee Department</label><input type="text" name="employeeDept" placeholder="e.g. Marketing, Partnerships" required></div>
-    <div class="ci-field"><label>Employee Email</label><input type="email" name="employeeEmail" placeholder="you@polymarket.com" required></div>
-    <div class="ci-field"><label>Employee Mailing Address</label><input type="text" name="employeeAddress" placeholder="Street, City, State, ZIP" required></div>
-    <div class="ci-field"><label>Phone Number</label><input type="tel" name="phone" placeholder="+1 (000) 000-0000" required></div>
-  `;
+function ensureIntakeModal() {
+  if (_intakeModal) return _intakeModal;
+  const overlay = document.createElement('div');
+  overlay.className = 'intake-modal-overlay';
+  overlay.id = 'intakeModalOverlay';
+  overlay.innerHTML = `
+    <div class="intake-modal" role="dialog" aria-modal="true" aria-label="Order terminal">
+      <div class="intake-modal-bar">
+        <span class="term-title">POLYMARKET ORDER TERMINAL</span>
+        <button type="button" class="term-close" aria-label="Close">✕</button>
+      </div>
+      <div class="intake-modal-body">
+        <div class="intake-modal-head term-cursor"></div>
+        <form class="intake-term-form" novalidate>
+          <div class="intake-fields"></div>
+          <div class="intake-submit-row">
+            <button type="submit" class="term-submit">Transmit Order →</button>
+            <p class="term-error"></p>
+            <button type="button" class="term-back">← Back to bag</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
 
-  panel.innerHTML = `
-    <form id="cartIntakeForm" onsubmit="submitCartIntake(event, '${type}')">
-      <button type="button" class="ci-back" onclick="hideCartForm()">← Back</button>
-      ${type === 'client' ? clientFields : employeeFields}
-      <button type="submit" class="ci-submit">Place Order →</button>
-      <p class="ci-error" id="cartIntakeError" style="display:none;">Please fill in all fields.</p>
-    </form>
-  `;
-  panel.style.display = 'block';
+  const form     = overlay.querySelector('.intake-term-form');
+  const closeBtn = overlay.querySelector('.term-close');
+  const backBtn  = overlay.querySelector('.term-back');
+
+  closeBtn.addEventListener('click', closeIntakeModal);
+  backBtn.addEventListener('click', closeIntakeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeIntakeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeIntakeModal();
+  });
+  form.addEventListener('submit', (e) => submitCartIntake(e, overlay.dataset.type));
+
+  _intakeModal = overlay;
+  return overlay;
 }
 
-function hideCartForm() {
-  const btnRow = document.getElementById('cartBtnRow');
-  const panel  = document.getElementById('cartIntakePanel');
-  if (btnRow) btnRow.style.display = 'flex';
-  if (panel)  { panel.style.display = 'none'; panel.innerHTML = ''; }
+function closeIntakeModal() {
+  if (_intakeModal) _intakeModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showCartForm(type) {
+  const overlay = ensureIntakeModal();
+  overlay.dataset.type = type;
+
+  overlay.querySelector('.intake-modal-head').innerHTML = type === 'client'
+    ? 'ORDER TYPE: <b>VIP CLIENT GIFT</b>'
+    : 'ORDER TYPE: <b>EMPLOYEE</b>';
+
+  const fieldsWrap = overlay.querySelector('.intake-fields');
+  fieldsWrap.innerHTML = INTAKE_FIELDS[type].map(f => `
+    <div class="term-field">
+      <label for="if_${f.name}">${f.label}</label>
+      <input id="if_${f.name}" name="${f.name}" type="${f.type || 'text'}"
+        placeholder="${f.placeholder}" ${f.maxlength ? `maxlength="${f.maxlength}"` : ''} autocomplete="off">
+    </div>`).join('');
+
+  overlay.querySelector('.term-error').textContent = '';
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { const first = fieldsWrap.querySelector('input'); if (first) first.focus(); }, 60);
 }
 
 function submitCartIntake(e, type) {
   e.preventDefault();
+  const overlay = _intakeModal;
   const form = e.target;
-  const data = {};
-  new FormData(form).forEach((v, k) => { data[k] = v.trim(); });
-  if (Object.values(data).some(v => !v)) {
-    const err = document.getElementById('cartIntakeError');
-    if (err) err.style.display = 'block';
+  const data = { type };
+  let firstInvalid = null;
+  form.querySelectorAll('.term-field').forEach(fieldEl => {
+    const input = fieldEl.querySelector('input');
+    const val = input.value.trim();
+    data[input.name] = val;
+    if (!val) { fieldEl.classList.add('invalid'); if (!firstInvalid) firstInvalid = input; }
+    else fieldEl.classList.remove('invalid');
+  });
+  const errEl = overlay.querySelector('.term-error');
+  if (firstInvalid) {
+    errEl.textContent = 'ERR — all fields required';
+    firstInvalid.focus();
     return;
   }
-  sessionStorage.setItem('pm_intake', JSON.stringify({ type, ...data }));
+  errEl.textContent = '';
+  sessionStorage.setItem('pm_intake', JSON.stringify(data));
   window.location.href = 'checkout.html';
+}
+
+// ── Mount the green (Client) / red (Employee) physical buttons ──────────
+
+function mountCartButtons() {
+  if (typeof window.mountPhysicalButton !== 'function') return;
+  const clientC = document.getElementById('cartClientBtn');
+  const empC    = document.getElementById('cartEmployeeBtn');
+  if (clientC && !clientC.dataset.mounted) {
+    clientC.dataset.mounted = '1';
+    window.mountPhysicalButton({ container: clientC, variant: 'green', label: 'Client',   onClick: () => showCartForm('client') });
+  }
+  if (empC && !empC.dataset.mounted) {
+    empC.dataset.mounted = '1';
+    window.mountPhysicalButton({ container: empC, variant: 'red', label: 'Employee', onClick: () => showCartForm('employee') });
+  }
 }
 
 // ── Init ───────────────────────────────────────────────────────────
@@ -221,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
   document.getElementById('cartOverlay')?.addEventListener('click', closeCart);
+  mountCartButtons();
   renderCart();
   updateCartBadge();
 });

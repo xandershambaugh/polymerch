@@ -582,6 +582,46 @@
       // Clear cart
       sessionStorage.removeItem(CART_KEY);
     });
+
+    // ── Arriving from the order terminal modal ───────────────────────────
+    // The modal already collected everything, so skip the on-page form:
+    // render the confirmation and post the Shopify order directly.
+    function enterConfirmation(data, cart) {
+      const ref = 'VIP-' + Date.now().toString(36).toUpperCase();
+      const recipientName  = data.clientName  || data.employeeName  || '';
+      const recipientEmail = data.clientEmail || data.employeeEmail || '';
+
+      document.getElementById('confirmRef').textContent = 'REF ' + ref;
+      document.getElementById('confirmEmployee').innerHTML =
+        `${data.employeeName || ''}<br>${data.employeeDept || ''}`;
+      document.getElementById('confirmClient').innerHTML =
+        `${recipientName}<br>${recipientEmail}<br>${data.address1 || ''}<br>${data.city || ''}, ${data.state || ''} ${data.zip || ''}`;
+      document.getElementById('confirmItems').innerHTML =
+        cart.map(i => `${i.name}${i.color ? ' / ' + i.color : ''} — ${i.size}${i.qty > 1 ? ' ×' + i.qty : ''}`).join('<br>') || '—';
+
+      document.getElementById('checkoutFormCol').style.display = 'none';
+      document.getElementById('checkoutConfirm').style.display = 'block';
+
+      // Feed the order into Shopify (no-op until Admin env vars are set in Vercel).
+      if (typeof createShopifyDraftOrder === 'function') {
+        createShopifyDraftOrder(data, cart).then(orderName => {
+          if (orderName) {
+            const refEl = document.getElementById('confirmRef');
+            if (refEl) refEl.textContent += ' · ' + orderName;
+          }
+        });
+      }
+
+      sessionStorage.removeItem(CART_KEY);
+      sessionStorage.removeItem('pm_intake');
+    }
+
+    // Run after js/shopify.js has loaded so createShopifyDraftOrder exists.
+    document.addEventListener('DOMContentLoaded', () => {
+      let intake = null;
+      try { intake = JSON.parse(sessionStorage.getItem('pm_intake') || 'null'); } catch {}
+      if (intake && intake.address1) enterConfirmation(intake, getCart());
+    });
   </script>
   <script src="js/shopify.js"></script>
   <script src="js/cart.js"></script>

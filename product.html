@@ -636,27 +636,18 @@
         You have reached the maximum order limit. Please remove an item to proceed.
       </div>
 
-      <!-- Physical button row -->
+      <!-- Physical button row — green=Client / red=Employee (mounted by cart.js) -->
       <div class="cart-btn-row" id="cartBtnRow">
-        <button class="phy-btn phy-btn-green" onclick="showCartForm('client')">
-          <div class="phy-btn-keycap">
-            <span class="phy-btn-label">For Client</span>
-          </div>
-        </button>
-        <button class="phy-btn phy-btn-red" onclick="showCartForm('employee')">
-          <div class="phy-btn-keycap">
-            <span class="phy-btn-label">For Employee</span>
-          </div>
-        </button>
+        <div class="cart-phys-btn" id="cartClientBtn"></div>
+        <div class="cart-phys-btn" id="cartEmployeeBtn"></div>
       </div>
-      <!-- Inline intake form -->
-      <div id="cartIntakePanel" style="display:none;"></div>
     </div>
   </aside>
 
   <script src="js/products.js"></script>
   <script src="js/shopify-storefront.js"></script>
   <script src="js/shopify.js"></script>
+  <script src="js/physical-buttons.js"></script>
   <script src="js/cart.js"></script>
   <script>
     if (sessionStorage.getItem('pm_auth') !== 'true') {

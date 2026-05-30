@@ -106,7 +106,7 @@ async function createShopifyDraftOrder(formData, cart) {
         zip:        formData.zip   || '',
         country:    'US',
       },
-      email: formData.clientEmail || '',
+      email: formData.clientEmail || formData.employeeEmail || '',
       note: [
         `Order type: ${formData.type === 'client' ? 'VIP Client Gift' : 'Employee'}`,
         `Employee: ${formData.employeeName} — ${formData.employeeDept}`,
