@@ -30,7 +30,10 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-const SHOPIFY_CONNECTED  = true;     // live — orders post to the draft-order proxy
+// Paused until SHOPIFY_STORE_DOMAIN + SHOPIFY_ADMIN_TOKEN are set in Vercel.
+// Flip back to true to post orders to the draft-order proxy. Checkout still
+// shows the confirmation either way.
+const SHOPIFY_CONNECTED  = false;
 const DRAFT_ORDER_PROXY  = '/api/create-draft-order';   // Vercel function URL
 
 /**

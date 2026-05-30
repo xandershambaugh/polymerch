@@ -21,7 +21,10 @@
  */
 
 const SHOPIFY_STORE_DOMAIN     = 'polyshop-7483.myshopify.com';
-const SHOPIFY_STOREFRONT_TOKEN = '130572d885058aef942510a495dc0a5d';   // public, read-only
+// Live read paused — shop runs on the local catalog (js/products.js), no network needed.
+// To re-enable once products are published to the Headless channel, restore the token:
+//   '130572d885058aef942510a495dc0a5d'
+const SHOPIFY_STOREFRONT_TOKEN = '';          // empty → use local catalog (offline-safe)
 const SHOPIFY_API_VERSION      = '2024-10';
 
 /**
