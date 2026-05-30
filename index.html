@@ -135,6 +135,15 @@
       background: rgba(0, 0, 128, 0.06);
     }
 
+    /* Hand-drawn arrow image — multiply blends the white screenshot bg away */
+    .password-arrow-img {
+      display: block;
+      height: 20px;
+      width: auto;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
     .password-error {
       font-family: 'Space Mono', monospace;
       font-size: 9px;
@@ -144,6 +153,201 @@
       margin-top: 14px;
     }
 
+    /* Keep the box a stable width across button → input states (no jump) */
+    .password-form-wrap { min-width: 372px; }
+
+    /* Blue physical button stage */
+    .password-trigger {
+      display: flex;
+      justify-content: center;
+      padding: 8px 0 4px;
+    }
+    .password-trigger.is-hidden,
+    .password-form.is-hidden { display: none; }
+
+    /* ─────────────────────────────────────────────────────────────
+       PHYSICAL BUTTON — ported from physical-buttons-demo
+       (.phys-btn-v3 family). Self-contained.
+       ───────────────────────────────────────────────────────────── */
+    .phys-btn-v3 {
+      position: relative;
+      width: 170px;
+      height: 66.6px;
+      font-size: 14.2px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: filter 720ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .phys-btn-v3 img { pointer-events: none; -webkit-user-drag: none; }
+    .phys-btn-v3[disabled], .phys-btn-v3.is-locked { cursor: default; }
+    .phys-btn-v3.is-rejected { filter: saturate(0.18) brightness(0.94); }
+
+    .phys-btn-stage {
+      position: absolute;
+      inset: 0;
+      perspective: 520px;
+      perspective-origin: 50% 30%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .phys-btn-cap {
+      position: absolute;
+      inset: 0;
+      border-radius: 4.323px;
+      overflow: hidden;
+      transition: filter 110ms ease-out;
+    }
+    .phys-btn-cap.is-pressed {
+      filter: brightness(1.02);
+      transition: filter 90ms ease-out;
+    }
+    .phys-btn-cap img {
+      position: absolute;
+      max-width: none;
+      user-select: none;
+    }
+    .phys-btn-cap .cap-darken {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 150ms ease-out;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%);
+    }
+    .phys-btn-cap.is-pressed .cap-darken { opacity: 1; }
+
+    .phys-btn-recess {
+      position: absolute;
+      left: 3.54%;
+      right: 4.09%;
+      top: 11.67%;
+      bottom: 10.89%;
+      background: #000;
+      border-radius: 4.132px;
+      transition: box-shadow 420ms cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+    }
+    .phys-btn-v3[data-pressed="true"] .phys-btn-recess {
+      box-shadow: inset 0 2px 3px rgba(0,0,0,0.55), inset 0 -1px 1px rgba(255,255,255,0.22);
+    }
+    .phys-btn-v3[data-lit="true"]:not([data-pressed="true"]) .phys-btn-recess {
+      box-shadow:
+        inset 0 1px 2px rgba(0,0,0,0.25),
+        inset 0 0 6px 1px rgba(255,255,255,0.55),
+        inset 0 0 14px 3px rgba(255,255,255,0.32);
+    }
+
+    .phys-btn-inner {
+      position: absolute;
+      left: 3.54%;
+      right: 4.21%;
+      top: 12.76%;
+      bottom: 10.89%;
+      border-radius: 4.323px;
+      overflow: hidden;
+      opacity: 1;
+      transition:
+        top 200ms cubic-bezier(0.36, 0, 0.16, 1.18),
+        bottom 200ms cubic-bezier(0.36, 0, 0.16, 1.18),
+        opacity 200ms ease-out,
+        filter 820ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 820ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .phys-btn-inner img {
+      position: absolute;
+      max-width: none;
+      user-select: none;
+    }
+    .phys-btn-inner.is-pressed {
+      top: 18.68%;
+      bottom: 5.45%;
+      opacity: 0.86;
+      transition:
+        top 80ms cubic-bezier(0.5, 0, 0.2, 1),
+        bottom 80ms cubic-bezier(0.5, 0, 0.2, 1),
+        opacity 60ms ease-out;
+    }
+    .phys-btn-inner .top-shadow {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 12px;
+      opacity: 0;
+      transition: opacity 150ms ease-out;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0));
+    }
+    .phys-btn-inner.is-pressed .top-shadow { opacity: 1; }
+    .phys-btn-inner.is-lit {
+      filter: brightness(1.14) saturate(1.18);
+    }
+    .phys-btn-inner--blue.is-lit {
+      box-shadow:
+        inset 0 0 18px 2px rgba(110,170,255,0.38),
+        inset 0 0 22px 4px rgba(255,255,255,0.45);
+    }
+
+    .phys-btn-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      text-transform: uppercase;
+      font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      font-weight: 500;
+      font-size: 1em;
+      line-height: 100%;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.82);
+      text-shadow:
+        0 -0.4px 0.5px rgba(0,0,0,0.55),
+        0 0.4px 0 rgba(255,255,255,0.18),
+        0 1px 0 rgba(0,0,0,0.22);
+      padding-bottom: 0.22em;
+    }
+
+    .phys-btn-halo {
+      position: absolute;
+      inset: -12px;
+      border-radius: 10px;
+      pointer-events: none;
+      opacity: 0;
+      filter: blur(5px);
+      transition: opacity 820ms cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+    }
+    .phys-btn-halo.is-lit { opacity: 0.75; }
+    .phys-btn-halo--blue {
+      background: radial-gradient(ellipse at center, rgba(110,170,255,0.55) 0%, rgba(110,170,255,0.18) 45%, rgba(110,170,255,0) 75%);
+    }
+
+    .phys-btn-bgglow {
+      position: absolute;
+      inset: -64px -56px -80px -56px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      filter: blur(34px);
+      transition: opacity 820ms cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+    }
+    .phys-btn-bgglow.is-lit { opacity: 1; }
+    .phys-btn-bgglow--blue {
+      background: radial-gradient(ellipse at center, rgba(70,140,255,0.6) 0%, rgba(70,140,255,0.2) 40%, rgba(70,140,255,0) 75%);
+    }
+
+    @media (hover: hover) {
+      .phys-btn-v3:not([data-lit="true"]):not([data-pressed="true"]):hover {
+        filter: saturate(0.75);
+        transition: none;
+      }
+    }
 
   </style>
 </head>
@@ -187,8 +391,12 @@
   <!-- PASSWORD GATE -->
   <main class="password-gate">
     <div class="password-form-wrap">
-      <h1>Enter Password</h1>
-      <form id="passwordForm">
+      <h1>Members Only</h1>
+
+      <!-- Blue physical button — click to reveal the password field -->
+      <div class="password-trigger" id="passwordTrigger"></div>
+
+      <form id="passwordForm" class="password-form is-hidden">
         <div class="password-input-row">
           <input
             type="password"
@@ -197,7 +405,7 @@
             autocomplete="current-password"
             required
           />
-          <button type="submit" class="password-submit-btn">→</button>
+          <button type="submit" class="password-submit-btn" aria-label="Enter"><img class="password-arrow-img" src="assets/images/members-arrow.png" alt="→" onerror="this.replaceWith(document.createTextNode('→'))"></button>
         </div>
       </form>
       <p class="password-error" id="passwordError" style="display:none;">Incorrect password. Try again.</p>
@@ -279,7 +487,7 @@
     requestAnimationFrame(draw);
 
     // ── Password gate ────────────────────────────────────────────────────
-    const CORRECT_PASSWORD = 'shabang';
+    const CORRECT_PASSWORD = 'yellowsubmarine';
 
     const form    = document.getElementById('passwordForm');
     const input   = document.getElementById('passwordInput');
@@ -307,6 +515,182 @@
 
   </script>
 
+
+  <!-- ── Blue physical button (ported from physical-buttons-demo) ──────────
+       Wrapped in an IIFE so its audio-context variable doesn't collide with
+       the page's canvas `ctx`. Clicking the blue button reveals the field. -->
+  <script>
+  (function () {
+    // ── Synthesised mechanical click ────────────────────────────────────
+    let audioCtx = null, unlocked = false;
+    function getCtx() {
+      if (!audioCtx) {
+        const C = window.AudioContext || window.webkitAudioContext;
+        if (!C) return null;
+        audioCtx = new C();
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      return audioCtx;
+    }
+    function unlockAudio() {
+      if (unlocked) return;
+      const ac = getCtx();
+      if (!ac) return;
+      try {
+        const buf = ac.createBuffer(1, 1, 22050);
+        const src = ac.createBufferSource();
+        src.buffer = buf; src.connect(ac.destination); src.start(0);
+        if (ac.state === "suspended") ac.resume().catch(() => {});
+        unlocked = true;
+      } catch {}
+    }
+    function ensureAudioUnlocked() {
+      if (unlocked) return;
+      const onGesture = () => {
+        unlockAudio();
+        if (unlocked) {
+          window.removeEventListener("pointerdown", onGesture);
+          window.removeEventListener("keydown", onGesture);
+        }
+      };
+      window.addEventListener("pointerdown", onGesture, { passive: true });
+      window.addEventListener("keydown", onGesture);
+    }
+    function clickLayer(ac, opts) {
+      const now = opts.at ?? ac.currentTime;
+      const bufSize = Math.floor(ac.sampleRate * opts.noiseDur);
+      const buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+      const ch = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        const t = i / bufSize; ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 5);
+      }
+      const noise = ac.createBufferSource(); noise.buffer = buf;
+      const bp = ac.createBiquadFilter(); bp.type = "bandpass";
+      bp.frequency.value = opts.noiseFreq; bp.Q.value = opts.noiseQ;
+      const ng = ac.createGain(); ng.gain.value = opts.noiseGain;
+      noise.connect(bp).connect(ng).connect(ac.destination); noise.start(now);
+
+      const thud = ac.createOscillator(); thud.type = "sine";
+      thud.frequency.value = opts.thudFreq;
+      const tg = ac.createGain();
+      tg.gain.setValueAtTime(0, now);
+      tg.gain.linearRampToValueAtTime(opts.thudGain, now + 0.003);
+      tg.gain.exponentialRampToValueAtTime(0.0001, now + opts.thudDur);
+      thud.connect(tg).connect(ac.destination); thud.start(now);
+      thud.stop(now + opts.thudDur + 0.02);
+
+      if (opts.popFreq && opts.popGain) {
+        const pop = ac.createOscillator(); pop.type = "triangle";
+        pop.frequency.value = opts.popFreq;
+        const pg = ac.createGain();
+        pg.gain.setValueAtTime(opts.popGain, now);
+        pg.gain.exponentialRampToValueAtTime(0.0001, now + 0.015);
+        pop.connect(pg).connect(ac.destination); pop.start(now); pop.stop(now + 0.02);
+      }
+    }
+    function playClickDown() { const ac = getCtx(); if (ac) clickLayer(ac, { noiseFreq: 3600, noiseQ: 4.0, noiseGain: 0.34, noiseDur: 0.022, thudFreq: 300, thudGain: 0.08, thudDur: 0.05, popFreq: 2200, popGain: 0.22 }); }
+    function playClickUp()   { const ac = getCtx(); if (ac) clickLayer(ac, { noiseFreq: 4400, noiseQ: 5.0, noiseGain: 0.14, noiseDur: 0.015, thudFreq: 360, thudGain: 0.03, thudDur: 0.03, popFreq: 2800, popGain: 0.10 }); }
+    function vibrate() { if (navigator.vibrate) { try { navigator.vibrate(18); } catch {} } }
+
+    // ── Blue sprite offsets (blue = red sprite + hue-rotate) ─────────────
+    const OUTER = { left: "-204.02%", top: "-358.54%", w: "391.69%", h: "753.11%" };
+    const INNER = { left: "-227.87%", top: "-477.96%", w: "428.22%", h: "972.16%" };
+    const CAP_FILTER = "hue-rotate(220deg) saturate(1.05)";
+
+    function mountBlueButton({ container, label, onClick }) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "phys-btn-v3";
+      btn.setAttribute("aria-label", label);
+      btn.dataset.variant = "blue";
+      btn.dataset.lit = "false";
+      btn.dataset.pressed = "false";
+      btn.innerHTML = `
+        <span class="phys-btn-bgglow phys-btn-bgglow--blue"></span>
+        <span class="phys-btn-stage">
+          <span class="phys-btn-cap">
+            <img src="assets/button-base.webp" alt="" draggable="false"
+              style="left:${OUTER.left};top:${OUTER.top};width:${OUTER.w};height:${OUTER.h};filter:${CAP_FILTER};" />
+            <span class="cap-darken"></span>
+          </span>
+          <span class="phys-btn-recess"></span>
+          <span class="phys-btn-inner phys-btn-inner--blue">
+            <img src="assets/button-base.webp" alt="" draggable="false"
+              style="left:${INNER.left};top:${INNER.top};width:${INNER.w};height:${INNER.h};filter:${CAP_FILTER};" />
+            <span class="top-shadow"></span>
+            <span class="phys-btn-label">${label}</span>
+          </span>
+          <span class="phys-btn-halo phys-btn-halo--blue"></span>
+        </span>`;
+
+      const cap = btn.querySelector(".phys-btn-cap");
+      const inner = btn.querySelector(".phys-btn-inner");
+      const halo = btn.querySelector(".phys-btn-halo");
+      const bgglow = btn.querySelector(".phys-btn-bgglow");
+      let pressed = false;
+
+      function setPressed(v) {
+        if (pressed === v) return;
+        pressed = v;
+        btn.dataset.pressed = v ? "true" : "false";
+        cap.classList.toggle("is-pressed", v);
+        inner.classList.toggle("is-pressed", v);
+        v ? playClickDown() : playClickUp();
+      }
+      function setLit(v) {
+        btn.dataset.lit = v ? "true" : "false";
+        inner.classList.toggle("is-lit", v);
+        halo.classList.toggle("is-lit", v && !pressed);
+        bgglow.classList.toggle("is-lit", v && !pressed);
+      }
+
+      let pointerInside = false;
+      btn.addEventListener("pointerdown", (e) => {
+        ensureAudioUnlocked(); unlockAudio(); vibrate();
+        pointerInside = true; setPressed(true); btn.setPointerCapture(e.pointerId);
+      });
+      btn.addEventListener("pointermove", (e) => {
+        if (!pressed) return;
+        const r = btn.getBoundingClientRect();
+        pointerInside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      });
+      function release() {
+        if (!pressed) return;
+        setPressed(false);
+        if (pointerInside) { setLit(true); onClick && onClick(); }
+      }
+      btn.addEventListener("pointerup", release);
+      btn.addEventListener("pointercancel", release);
+      btn.addEventListener("lostpointercapture", () => { pressed && setPressed(false); });
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.key === "Enter") { e.preventDefault(); if (!pressed) { ensureAudioUnlocked(); setPressed(true); } }
+      });
+      btn.addEventListener("keyup", (e) => {
+        if (e.key === " " || e.key === "Enter") { pointerInside = true; release(); }
+      });
+
+      container.appendChild(btn);
+      return btn;
+    }
+
+    // ── Wire it up: click the blue button → reveal + focus the field ─────
+    const trigger = document.getElementById("passwordTrigger");
+    const formEl  = document.getElementById("passwordForm");
+    const inputEl = document.getElementById("passwordInput");
+    if (trigger && formEl) {
+      mountBlueButton({
+        container: trigger,
+        label: "Password",
+        onClick: () => {
+          trigger.classList.add("is-hidden");
+          formEl.classList.remove("is-hidden");
+          setTimeout(() => inputEl && inputEl.focus(), 60);
+        },
+      });
+      ensureAudioUnlocked();
+    }
+  })();
+  </script>
 
   <script src="js/ticker.js"></script>
   <script src="js/auth.js"></script>
