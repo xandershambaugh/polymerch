@@ -80,9 +80,13 @@
     .password-form-wrap {
       pointer-events: all;
       text-align: center;
-      padding: 33px 48px 30px;
+      padding: 25px 48px;
       background: #ffffff;
       border: 1px solid rgba(0, 0, 128, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .password-form-wrap h1 {
@@ -160,7 +164,7 @@
     .password-trigger {
       display: flex;
       justify-content: center;
-      padding: 8px 0 4px;
+      padding: 6px 0;
     }
     .password-trigger.is-hidden,
     .password-form.is-hidden { display: none; }
@@ -391,8 +395,6 @@
   <!-- PASSWORD GATE -->
   <main class="password-gate">
     <div class="password-form-wrap">
-      <h1>Members Only</h1>
-
       <!-- Blue physical button — click to reveal the password field -->
       <div class="password-trigger" id="passwordTrigger"></div>
 
@@ -680,7 +682,7 @@
     if (trigger && formEl) {
       mountBlueButton({
         container: trigger,
-        label: "Password",
+        label: "Members Only",
         onClick: () => {
           trigger.classList.add("is-hidden");
           formEl.classList.remove("is-hidden");
