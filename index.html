@@ -37,20 +37,31 @@
       background-color: #fff;
     }
 
-    /* Background image at 30% opacity */
+    /* Superstudio background graphics at 30% opacity (crossfade on enter) */
     .password-bg {
       position: fixed;
       inset: 0;
-      background-image: url('assets/images/password-bg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0.3;
       pointer-events: none;
       z-index: 1;
+      transition: opacity 0.9s ease;
     }
+    /* New York City (initial) */
+    .password-bg--nyc {
+      background-image: url('assets/images/password-bg.jpg');
+      opacity: 0.3;
+    }
+    .password-bg--nyc.fade-out { opacity: 0; }
+    /* Gold monolith in the wild (blends in on enter) */
+    .password-bg--monolith {
+      background-image: url('assets/images/monolith-bg.jpg');
+      opacity: 0;
+    }
+    .password-bg--monolith.fade-in { opacity: 0.32; }
 
-    /* Dot grid on top of the image — original navy dots on white */
+    /* Dot grid (initial, fades out with the NYC graphic) */
     .dot-overlay {
       position: fixed;
       inset: 0;
@@ -58,7 +69,23 @@
       background-size: 24px 24px;
       pointer-events: none;
       z-index: 2;
+      transition: opacity 0.9s ease;
     }
+    .dot-overlay.fade-out { opacity: 0; }
+
+    /* Thin light architectural grid (blends in on enter) */
+    .arch-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      background-image:
+        repeating-linear-gradient(to right,  rgba(0,0,0,0.10) 0 1px, transparent 1px 88px),
+        repeating-linear-gradient(to bottom, rgba(0,0,0,0.10) 0 1px, transparent 1px 88px);
+      transition: opacity 1s ease;
+    }
+    .arch-grid.show { opacity: 1; }
 
     /* Header sits above canvas */
     .site-header {
@@ -86,22 +113,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      /* Clean, even offset framing the 170×66.6 blue button (~15px all around) */
-      width: 200px;
-      height: 96px;
+      /* Clean, even offset framing the blue button — 1.5× the prior size */
+      width: 300px;
+      height: 144px;
       padding: 0;
       overflow: hidden;
       transition:
         width 0.66s cubic-bezier(0.66, 0, 0.2, 1),
         height 0.66s cubic-bezier(0.66, 0, 0.2, 1),
+        background-color 0.6s ease,
         border-color 0.45s ease;
     }
-    /* Analog "keyboard" spread — white sheet grows to fill the viewport,
-       hiding the New York dot-grid background. */
+    /* Analog "keyboard" spread — white sheet grows to the full left/right
+       (and top/bottom) extents of the page, hiding the NYC graphic. */
     .password-form-wrap.gate-expanded {
       width: 100vw;
       height: 100vh;
       border-color: transparent;
+    }
+    /* Then the white dissolves to reveal the blended gold-monolith graphic
+       + architectural grid beneath. */
+    .password-form-wrap.gate-revealed {
+      background-color: transparent;
     }
 
     .password-form-wrap h1 {
@@ -184,18 +217,19 @@
     .password-trigger.is-hidden,
     .password-form.is-hidden { display: none; }
 
-    /* The blue button "becomes" a white-infill square password field */
+    /* The blue button "becomes" a white-infill square password field —
+       black edge + black type for legibility on the white field. */
     .password-form.gate-square {
-      width: 200px;
-      height: 200px;
+      width: 220px;
+      height: 220px;
       background: #fff;
-      border: 1.5px solid #000080;
+      border: 1.5px solid #000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 18px;
-      padding: 22px;
+      padding: 24px;
       opacity: 0;
       transform: scale(0.9);
       transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.5, 0, 0.2, 1);
@@ -208,11 +242,14 @@
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #000080;
+      color: #000;
     }
     .gate-square .gate-square-label { display: block; }
-    .gate-square .password-input-row { width: 100%; }
-    .gate-square .password-input-row input { min-width: 0; text-align: center; }
+    .gate-square .password-input-row { width: 100%; border-color: #000; }
+    .gate-square .password-input-row input { min-width: 0; text-align: center; color: #000; }
+    .gate-square .password-input-row input::placeholder { color: rgba(0,0,0,0.4); }
+    .gate-square .password-submit-btn { color: #000; border-left-color: #000; }
+    .gate-square .password-arrow-img { filter: brightness(0); }
 
     /* ─────────────────────────────────────────────────────────────
        PHYSICAL BUTTON — ported from physical-buttons-demo
@@ -405,11 +442,13 @@
   <!-- TV STATIC CANVAS (hidden) -->
   <canvas id="staticCanvas"></canvas>
 
-  <!-- BACKGROUND IMAGE -->
-  <div class="password-bg"></div>
+  <!-- BACKGROUND GRAPHICS — NYC crossfades to the gold monolith on enter -->
+  <div class="password-bg password-bg--nyc" id="bgNyc"></div>
+  <div class="password-bg password-bg--monolith" id="bgMonolith"></div>
 
-  <!-- DOT OVERLAY — original navy dot grid on top of the images -->
-  <div class="dot-overlay"></div>
+  <!-- DOT OVERLAY (fades out) + thin architectural grid (fades in) -->
+  <div class="dot-overlay" id="dotOverlay"></div>
+  <div class="arch-grid" id="archGrid"></div>
 
   <!-- HEADER -->
   <header class="site-header">
@@ -444,7 +483,7 @@
       <div class="password-trigger" id="passwordTrigger"></div>
 
       <form id="passwordForm" class="password-form is-hidden">
-        <div class="gate-square-label">Enter Password</div>
+        <div class="gate-square-label">Members Only</div>
         <div class="password-input-row">
           <input
             type="password"
@@ -723,10 +762,14 @@
 
     // ── Wire it up: click ENTER → spread the white sheet to fill the page,
     //    then morph the blue button into a white-infill square password field.
-    const trigger = document.getElementById("passwordTrigger");
-    const formEl  = document.getElementById("passwordForm");
-    const inputEl = document.getElementById("passwordInput");
-    const wrap    = document.querySelector(".password-form-wrap");
+    const trigger     = document.getElementById("passwordTrigger");
+    const formEl      = document.getElementById("passwordForm");
+    const inputEl     = document.getElementById("passwordInput");
+    const wrap        = document.querySelector(".password-form-wrap");
+    const bgNyc       = document.getElementById("bgNyc");
+    const bgMonolith  = document.getElementById("bgMonolith");
+    const dotOverlay  = document.getElementById("dotOverlay");
+    const archGrid    = document.getElementById("archGrid");
     if (trigger && formEl && wrap) {
       let opened = false;
       mountBlueButton({
@@ -735,13 +778,21 @@
         onClick: () => {
           if (opened) return;
           opened = true;
-          // 1. White box spreads to the edges of the page (hides NY dot grid).
+          // 1. White sheet spreads full-width/height (hides the NYC graphic).
           wrap.classList.add("gate-expanded");
+          // Simultaneously: dissolve NYC + dots, blend in the gold monolith
+          //  Superstudio graphic + the thin architectural grid.
+          bgNyc && bgNyc.classList.add("fade-out");
+          dotOverlay && dotOverlay.classList.add("fade-out");
+          bgMonolith && bgMonolith.classList.add("fade-in");
+          archGrid && archGrid.classList.add("show");
           // 2. Blue button fades as the sheet finishes spreading.
           setTimeout(() => trigger.classList.add("fade-out"), 430);
-          // 3. Button is replaced by the white-infill square password field.
+          // 3. The white dissolves to reveal the blended graphic + grid, and
+          //    the button becomes the black-edged MEMBERS ONLY password box.
           setTimeout(() => {
             trigger.classList.add("is-hidden");
+            wrap.classList.add("gate-revealed");
             formEl.classList.remove("is-hidden");
             formEl.classList.add("gate-square");
             requestAnimationFrame(() => formEl.classList.add("show"));
