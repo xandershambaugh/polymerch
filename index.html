@@ -104,37 +104,34 @@
       pointer-events: none;
     }
 
+    /* The exact white square — present from load and maintained throughout:
+       holds MEMBERS ONLY + the blue ENTER button, then the password field. */
     .password-form-wrap {
       pointer-events: all;
       text-align: center;
       background: #ffffff;
-      border: 1px solid rgba(0, 0, 128, 0.18);
+      border: 1.5px solid #000080;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      /* Clean, even offset framing the blue button — 1.5× the prior size */
+      gap: 22px;
       width: 300px;
-      height: 144px;
+      height: 300px;
       padding: 0;
       overflow: hidden;
-      transition:
-        width 0.66s cubic-bezier(0.66, 0, 0.2, 1),
-        height 0.66s cubic-bezier(0.66, 0, 0.2, 1),
-        background-color 0.6s ease,
-        border-color 0.45s ease;
     }
-    /* Analog "keyboard" spread — white sheet grows to the full left/right
-       (and top/bottom) extents of the page, hiding the NYC graphic. */
-    .password-form-wrap.gate-expanded {
-      width: 100vw;
-      height: 100vh;
-      border-color: transparent;
-    }
-    /* Then the white dissolves to reveal the blended gold-monolith graphic
-       + architectural grid beneath. */
-    .password-form-wrap.gate-revealed {
-      background-color: transparent;
+
+    /* MEMBERS ONLY title — sits above the control and stays put on click
+       (the control below keeps the same height, so this never moves). */
+    .gate-heading {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #000080;
+      white-space: nowrap;
     }
 
     .password-form-wrap h1 {
@@ -217,39 +214,45 @@
     .password-trigger.is-hidden,
     .password-form.is-hidden { display: none; }
 
-    /* The blue button "becomes" a white-infill square password field —
-       black edge + black type for legibility on the white field. */
+    /* The blue button "becomes" a black-edged white password box of the SAME
+       height, so MEMBERS ONLY above it never shifts. */
     .password-form.gate-square {
-      width: 220px;
-      height: 220px;
+      width: 230px;
+      height: 66.6px;
       background: #fff;
       border: 1.5px solid #000;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 18px;
-      padding: 24px;
       opacity: 0;
-      transform: scale(0.9);
-      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.5, 0, 0.2, 1);
+      transform: scale(0.96);
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.5, 0, 0.2, 1);
     }
     .password-form.gate-square.show { opacity: 1; transform: scale(1); }
-    .gate-square-label {
-      display: none;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #000;
-    }
-    .gate-square .gate-square-label { display: block; }
-    .gate-square .password-input-row { width: 100%; border-color: #000; }
+    .gate-square .password-input-row { width: 100%; border: none; }
     .gate-square .password-input-row input { min-width: 0; text-align: center; color: #000; }
     .gate-square .password-input-row input::placeholder { color: rgba(0,0,0,0.4); }
-    .gate-square .password-submit-btn { color: #000; border-left-color: #000; }
+    .gate-square .password-submit-btn { color: #000; border-left: 1px solid #000; }
     .gate-square .password-arrow-img { filter: brightness(0); }
+
+    /* White bleed wipe — on click it bleeds outward to the left/right page
+       edges, then dissolves to reveal the gold-monolith graphic + grid.
+       Sits behind the square (z3) so the square stays crisp throughout. */
+    .gate-bleed {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      background: #fff;
+      z-index: 3;
+      opacity: 1;
+      pointer-events: none;
+      transition: width 0.6s cubic-bezier(0.66, 0, 0.2, 1), opacity 0.55s ease;
+    }
+    .gate-bleed.bleed { width: 100vw; }   /* bleed left + right to the edges */
+    .gate-bleed.gone  { opacity: 0; }      /* then dissolve, revealing the bg */
 
     /* ─────────────────────────────────────────────────────────────
        PHYSICAL BUTTON — ported from physical-buttons-demo
@@ -450,6 +453,9 @@
   <div class="dot-overlay" id="dotOverlay"></div>
   <div class="arch-grid" id="archGrid"></div>
 
+  <!-- White bleed wipe (behind the square) — bleeds L/R then dissolves -->
+  <div class="gate-bleed" id="gateBleed"></div>
+
   <!-- HEADER -->
   <header class="site-header">
     <nav class="nav-inner">
@@ -460,12 +466,7 @@
       <a href="index.html" class="nav-wordmark">POLYMARKET</a>
 
       <div class="nav-right">
-        <button class="nav-icon-btn" title="Account">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="10" cy="7" r="3.5"/>
-            <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
-          </svg>
-        </button>
+        <button class="nav-text-btn" title="Log in">LOG IN</button>
       </div>
     </nav>
   </header>
@@ -479,11 +480,12 @@
   <!-- PASSWORD GATE -->
   <main class="password-gate">
     <div class="password-form-wrap">
+      <!-- MEMBERS ONLY title, fixed above the button/field -->
+      <div class="gate-heading">Members Only</div>
       <!-- Blue physical button — click to reveal the password field -->
       <div class="password-trigger" id="passwordTrigger"></div>
 
       <form id="passwordForm" class="password-form is-hidden">
-        <div class="gate-square-label">Members Only</div>
         <div class="password-input-row">
           <input
             type="password"
@@ -760,17 +762,18 @@
       return btn;
     }
 
-    // ── Wire it up: click ENTER → spread the white sheet to fill the page,
-    //    then morph the blue button into a white-infill square password field.
+    // ── Wire it up: the white square stays put. Clicking ENTER fires a white
+    //    bleed that sweeps left/right then dissolves to the gold-monolith bg,
+    //    while the button becomes the password field. MEMBERS ONLY never moves.
     const trigger     = document.getElementById("passwordTrigger");
     const formEl      = document.getElementById("passwordForm");
     const inputEl     = document.getElementById("passwordInput");
-    const wrap        = document.querySelector(".password-form-wrap");
+    const bleed       = document.getElementById("gateBleed");
     const bgNyc       = document.getElementById("bgNyc");
     const bgMonolith  = document.getElementById("bgMonolith");
     const dotOverlay  = document.getElementById("dotOverlay");
     const archGrid    = document.getElementById("archGrid");
-    if (trigger && formEl && wrap) {
+    if (trigger && formEl) {
       let opened = false;
       mountBlueButton({
         container: trigger,
@@ -778,26 +781,26 @@
         onClick: () => {
           if (opened) return;
           opened = true;
-          // 1. White sheet spreads full-width/height (hides the NYC graphic).
-          wrap.classList.add("gate-expanded");
-          // Simultaneously: dissolve NYC + dots, blend in the gold monolith
-          //  Superstudio graphic + the thin architectural grid.
+          // 1. White wipe bleeds outward to the left/right edges...
+          if (bleed) {
+            bleed.classList.add("bleed");
+            // ...then dissolves, revealing the blended background.
+            setTimeout(() => bleed.classList.add("gone"), 600);
+          }
+          // Background: NYC + dots dissolve, gold monolith + arch grid blend in.
           bgNyc && bgNyc.classList.add("fade-out");
           dotOverlay && dotOverlay.classList.add("fade-out");
           bgMonolith && bgMonolith.classList.add("fade-in");
           archGrid && archGrid.classList.add("show");
-          // 2. Blue button fades as the sheet finishes spreading.
-          setTimeout(() => trigger.classList.add("fade-out"), 430);
-          // 3. The white dissolves to reveal the blended graphic + grid, and
-          //    the button becomes the black-edged MEMBERS ONLY password box.
+          // 2. Button becomes the black-edged password field in the same square.
+          trigger.classList.add("fade-out");
           setTimeout(() => {
             trigger.classList.add("is-hidden");
-            wrap.classList.add("gate-revealed");
             formEl.classList.remove("is-hidden");
             formEl.classList.add("gate-square");
             requestAnimationFrame(() => formEl.classList.add("show"));
             if (inputEl) inputEl.focus();
-          }, 720);
+          }, 360);
         },
       });
       ensureAudioUnlocked();
